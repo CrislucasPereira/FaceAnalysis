@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/previewView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.example.faceanalysis.OverlayView
+        android:id="@+id/overlayView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/tvResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Iniciando..."
+        android:textColor="@android:color/white"
+        android:background="#80000000"
+        android:padding="8dp"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="12dp" />
+</FrameLayout>
