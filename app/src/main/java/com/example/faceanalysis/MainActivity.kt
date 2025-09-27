@@ -21,13 +21,11 @@ import androidx.core.content.ContextCompat
 import com.google.mediapipe.tasks.vision.facelandmarker.FaceLandmarker
 import com.google.mediapipe.tasks.vision.core.ImageProcessingOptions
 import com.google.mediapipe.tasks.vision.core.RunningMode
-import com.google.mediapipe.framework.image.BitmapImageBuilder
 import ai.onnxruntime.*
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
-import java.nio.ByteBuffer
 import java.util.concurrent.Executors
 import java.util.ArrayDeque
 import kotlin.math.pow
@@ -49,7 +47,7 @@ class MainActivity : AppCompatActivity() {
     // Buffer (45 frames × 72 features)
     private val featureBuffer = ArrayDeque<FloatArray>()
     private val SEQ_LEN = 45
-    private val FEATURE_SIZE = 72
+    private val FEATURE_SIZE = 72   // 36 landmarks × 2 coords
 
     // rotação do frame mais recente
     private var lastRotationDegrees: Int = 0
@@ -60,7 +58,7 @@ class MainActivity : AppCompatActivity() {
         private const val ONNX_MODEL_NAME = "model_lstm_3_45_euclidean.onnx"
     }
 
-    // Índices selecionados (iguais ao run.py)
+    // Índices dos 36 landmarks que escolhemos
     private val SELECTED_LANDMARKS = listOf(
         61, 40, 37, 0, 267, 270, 291,      // boca externa
         78, 95, 14, 317, 308,              // boca interna
@@ -139,7 +137,7 @@ class MainActivity : AppCompatActivity() {
             .setBaseOptions(baseOptions)
             .setRunningMode(RunningMode.LIVE_STREAM)
             .setNumFaces(1)
-            .setResultListener { result, inputImage ->
+            .setResultListener { result, _ ->
                 try {
                     val faces = result.faceLandmarks()
                     if (faces.isEmpty()) {
@@ -150,12 +148,11 @@ class MainActivity : AppCompatActivity() {
                     } else {
                         val face = faces[0]
 
-                        // centro e escala
                         val cx = face[noseIdx].x()
                         val cy = face[noseIdx].y()
                         val scale = euclidean(face[leftEyeIdx], face[rightEyeIdx]).coerceAtLeast(1e-5f)
 
-                        // extrair 72 features
+                        // extrair 72 features (36 × 2)
                         val features = FloatArray(FEATURE_SIZE)
                         var k = 0
                         for (idx in SELECTED_LANDMARKS) {
@@ -169,31 +166,20 @@ class MainActivity : AppCompatActivity() {
                         if (featureBuffer.size >= SEQ_LEN) featureBuffer.removeFirst()
                         featureBuffer.addLast(features)
 
-                        // Corrigir landmarks em X e Y (espelhamento nos dois eixos)
-                        val correctedLandmarks = SELECTED_LANDMARKS.map { i ->
-                            val lm = face[i]
-                            val x = 1f - lm.x() // 👈 inversão horizontal
-                            val y = 1f - lm.y() // 👈 inversão vertical
-                            Pair(x, y)
-                        }
+                        // EAR e MAR
+                        val ear = calculateEAR(face)
+                        val mar = calculateMAR(face)
+
+                        Log.d(TAG, "👁️ EAR: %.4f".format(ear))
+                        Log.d(TAG, "👄 MAR: %.4f".format(mar))
 
                         if (featureBuffer.size == SEQ_LEN) {
-                            val prediction = runOnnxInference(featureBuffer.toList())
+                            val prediction = runOnnxInference(featureBuffer.toList(), ear, mar)
                             runOnUiThread {
-                                overlayView.setPoints(
-                                    correctedLandmarks,
-                                    isFrontCamera = true,
-                                    rotationDegrees = lastRotationDegrees
-                                )
-                                tvResult.text = "Classe: $prediction"
+                                tvResult.text = prediction
                             }
                         } else {
                             runOnUiThread {
-                                overlayView.setPoints(
-                                    correctedLandmarks,
-                                    isFrontCamera = true,
-                                    rotationDegrees = lastRotationDegrees
-                                )
                                 tvResult.text = "Coletando dados... (${featureBuffer.size}/$SEQ_LEN)"
                             }
                         }
@@ -206,15 +192,27 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-            .setErrorListener { error ->
-                Log.e(TAG, "Erro FaceLandmarker: ${error.message}")
-                runOnUiThread {
-                    tvResult.text = "Erro detector: ${error.message}"
-                }
-            }
             .build()
 
         faceLandmarker = FaceLandmarker.createFromOptions(this, options)
+    }
+
+    private fun calculateEAR(face: List<com.google.mediapipe.tasks.components.containers.NormalizedLandmark>): Float {
+        val eye = listOf(33, 160, 158, 133, 153, 144)
+        val A = euclidean(face[eye[1]], face[eye[5]])
+        val B = euclidean(face[eye[2]], face[eye[4]])
+        val C = euclidean(face[eye[0]], face[eye[3]])
+        return (A + B) / (2.0f * C.coerceAtLeast(1e-6f))
+    }
+
+    private fun calculateMAR(face: List<com.google.mediapipe.tasks.components.containers.NormalizedLandmark>): Float {
+        val top = face[13]
+        val bottom = face[14]
+        val left = face[61]
+        val right = face[291]
+        val vertical = euclidean(top, bottom)
+        val horizontal = euclidean(left, right)
+        return vertical / horizontal.coerceAtLeast(1e-6f)
     }
 
     /** Distância euclidiana */
@@ -225,8 +223,8 @@ class MainActivity : AppCompatActivity() {
         return sqrt((a.x() - b.x()).pow(2) + (a.y() - b.y()).pow(2))
     }
 
-    /** Rodar ONNX */
-    private fun runOnnxInference(sequence: List<FloatArray>): String {
+    /** Rodar ONNX + hibrid EAR/MAR */
+    private fun runOnnxInference(sequence: List<FloatArray>, ear: Float, mar: Float): String {
         if (ortSession == null) return "Modelo não carregado"
         val inputName = ortSession!!.inputNames.iterator().next()
 
@@ -236,18 +234,31 @@ class MainActivity : AppCompatActivity() {
         }
 
         val inputTensor = OnnxTensor.createTensor(ortEnv, inputData)
+        val startTime = System.currentTimeMillis()
         val results = ortSession!!.run(mapOf(inputName to inputTensor))
-        val output = results[0].value as Array<FloatArray>
+        val elapsed = System.currentTimeMillis() - startTime
 
+        val output = results[0].value as Array<FloatArray>
         val probs = output[0]
+
+        Log.d(TAG, "⚡ Tempo de inferência: ${elapsed}ms")
+        Log.d(TAG, "📊 Probabilidades: alerta=%.5f, bocejo=%.5f, microsleep=%.5f"
+            .format(probs[0], probs[1], probs[2]))
+        Log.d(TAG, "👁️ EAR usado: %.4f".format(ear))
+        Log.d(TAG, "👄 MAR usado: %.4f".format(mar))
+
+        // lógica híbrida: se EAR < 0.2 por tempo -> microsleep, se MAR > 0.35 -> bocejo
         val classes = listOf("Alerta", "Bocejo", "Microsleep")
         val maxIdx = probs.indices.maxByOrNull { probs[it] } ?: 0
+        var finalIdx = maxIdx
 
-        Log.d(TAG, "📥 Input shape enviado: [1, $SEQ_LEN, $FEATURE_SIZE]")
-        Log.d(TAG, "📊 Probabilidades: ${probs.joinToString()}")
-        Log.i(TAG, "🏷️ Classe escolhida: ${classes[maxIdx]} (confiança: ${probs[maxIdx]})")
+        if (ear < 0.18f && probs[2] > 0.15f) {
+            finalIdx = 2
+        } else if (mar > 0.35f && probs[1] > 0.20f) {
+            finalIdx = 1
+        }
 
-        return "${classes[maxIdx]} (conf: ${"%.2f".format(probs[maxIdx])})"
+        return "${classes[finalIdx]} (conf: %.2f)".format(probs[finalIdx])
     }
 
     /** Inicia câmera em tempo real */
@@ -269,14 +280,10 @@ class MainActivity : AppCompatActivity() {
                     val bitmap = imageProxy.toBitmap()
                     if (bitmap != null && faceLandmarker != null) {
                         lastRotationDegrees = imageProxy.imageInfo.rotationDegrees
-
-                        Log.d(TAG, "Rotation: $lastRotationDegrees°, Width: ${bitmap.width}, Height: ${bitmap.height}")
-
-                        val mpImage = BitmapImageBuilder(bitmap).build()
+                        val mpImage = com.google.mediapipe.framework.image.BitmapImageBuilder(bitmap).build()
                         val imgProcOptions = ImageProcessingOptions.builder()
                             .setRotationDegrees(lastRotationDegrees)
                             .build()
-
                         faceLandmarker?.detectAsync(mpImage, imgProcOptions, System.currentTimeMillis())
                     }
                 } catch (e: Exception) {

@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 
 class OverlayView @JvmOverloads constructor(
@@ -47,40 +46,27 @@ class OverlayView @JvmOverloads constructor(
             var drawX = x
             var drawY = y
 
-            // Debug: ver coordenadas originais
-            Log.d("OverlayView", "Original - X: $x, Y: $y")
-
-            // Correção baseada na rotação
             when (rotationDegrees) {
                 90 -> {
-                    // Dispositivo na vertical (portrait)
                     drawX = y
                     drawY = 1f - x
                 }
                 180 -> {
-                    // Cabeça para baixo
                     drawX = 1f - x
                     drawY = 1f - y
                 }
                 270 -> {
-                    // Dispositivo na vertical invertido
                     drawX = 1f - y
                     drawY = x
                 }
-                // 0°: orientação normal (landscape) - sem alteração
             }
 
-            // Para câmera frontal, espelhar horizontalmente
             if (isFrontCamera) {
                 drawX = 1f - drawX
             }
 
-            // Converter para coordenadas de tela
             val screenX = drawX * w
             val screenY = drawY * h
-
-            // Debug: ver coordenadas finais
-            Log.d("OverlayView", "Final - X: $screenX, Y: $screenY")
 
             canvas.drawCircle(screenX, screenY, 10f, paint)
         }
