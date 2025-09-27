@@ -68,4 +68,6 @@ dependencies {
     implementation("com.google.mediapipe:tasks-vision:0.20230731")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.activity:activity-ktx:1.8.0")
+    implementation("org.tensorflow:tensorflow-lite-select-tf-ops:2.14.0")
+    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.17.0")
 }
