@@ -17,7 +17,7 @@ class OverlayView @JvmOverloads constructor(
         color = Color.RED
         style = Paint.Style.FILL
         isAntiAlias = true
-        strokeWidth = 2f   // 🔹 mais fino
+        strokeWidth = 2f   /// 🔹 mais fino
     }
 
     private var points: List<Pair<Float, Float>> = emptyList()
