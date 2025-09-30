@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/bg_gradient"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <!-- Imagem do carro -->
+    <ImageView
+        android:id="@+id/imgCar"
+        android:layout_width="350dp"
+        android:layout_height="263dp"
+        android:layout_marginBottom="40dp"
+        android:contentDescription="Carro"
+        android:src="@drawable/ic_car" />
+
+    <!-- DriveOn (com ON em negrito separado) -->
+<LinearLayout
+android:id="@+id/layoutDriveOn"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:orientation="horizontal"
+android:gravity="center"
+android:layout_marginBottom="8dp">
+
+<TextView
+    android:id="@+id/txtDrive"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/drive"
+    android:textSize="46sp"
+    android:textStyle="normal"
+    android:textColor="#222222"/>
+
+<TextView
+    android:id="@+id/txtOn"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/on"
+    android:textSize="46sp"
+    android:textStyle="bold"
+    android:textColor="#222222"/>
+</LinearLayout>
+
+    <!-- Subtítulo -->
+<TextView
+android:id="@+id/txtSubtitle"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Segurança em cada viagem"
+android:textSize="20sp"
+android:textColor="#AAAAAA"
+android:layout_marginBottom="120dp"/>
+
+    <!-- Botão estilizado -->
+<Button
+android:id="@+id/btnEnter"
+android:layout_width="260dp"
+android:layout_height="60dp"
+android:text="Entrar"
+android:textSize="20sp"
+android:background="@drawable/btn_enter"
+android:textColor="#FFFFFF"/>
+    </LinearLayout>

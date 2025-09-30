@@ -1,27 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/root"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.camera.view.PreviewView
-        android:id="@+id/previewView"
+    <!-- Top AppBar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/topAppBar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <com.example.faceanalysis.OverlayView
-        android:id="@+id/overlayView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <TextView
-        android:id="@+id/tvResult"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Iniciando..."
-        android:textColor="@android:color/white"
-        android:background="#80000000"
-        android:padding="8dp"
-        android:layout_gravity="bottom|start"
-        android:layout_margin="12dp" />
-</FrameLayout>
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:title="Estado: Iniciando..."
+        android:titleTextColor="@android:color/white" />
+
+    <!-- Conteúdo principal com a câmera -->
+    <FrameLayout
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- Preview da câmera -->
+        <androidx.camera.view.PreviewView
+            android:id="@+id/previewView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- Overlay (desenhos da IA) -->
+        <com.example.faceanalysis.OverlayView
+            android:id="@+id/overlayView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- Borda preta superior com sombra amarela -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@drawable/borda_superior" />
+
+        <!-- Borda preta inferior com sombra amarela -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_gravity="bottom"
+            android:background="@drawable/borda_inferior" />
+
+        <!-- Texto de resultado -->
+        <TextView
+            android:id="@+id/tvResult"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Iniciando..."
+            android:textColor="@android:color/white"
+            android:background="#80000000"
+            android:padding="8dp"
+            android:layout_gravity="bottom|start"
+            android:layout_margin="12dp" />
+
+        <!-- Botão voltar -->
+        <ImageButton
+            android:id="@+id/btn_voltar"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="16dp"
+            android:background="@android:color/transparent"
+            android:src="@android:drawable/ic_menu_revert"
+            android:contentDescription="Voltar"
+            app:tint="@android:color/white" />
+
+    </FrameLayout>
+</LinearLayout>
