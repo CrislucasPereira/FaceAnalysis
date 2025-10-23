@@ -1,74 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:fitsSystemWindows="true"
+    android:background="#F4F5EF">
 
-    <!-- Top AppBar -->
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/topAppBar"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:title="Estado: Iniciando..."
-        android:titleTextColor="@android:color/white" />
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="32dp">
 
-    <!-- Conteúdo principal com a câmera -->
-    <FrameLayout
-        android:id="@+id/root"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        <!-- Ícone / Logo -->
+        <ImageView
+            android:id="@+id/imgHomeLogo"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginBottom="24dp"
+            android:src="@drawable/ic_face"
+            android:contentDescription="Logo do App" />
 
-        <!-- Preview da câmera -->
-        <androidx.camera.view.PreviewView
-            android:id="@+id/previewView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <!-- Overlay (desenhos da IA) -->
-        <com.example.faceanalysis.OverlayView
-            android:id="@+id/overlayView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <!-- Borda preta superior com sombra amarela -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="@drawable/borda_superior" />
-
-        <!-- Borda preta inferior com sombra amarela -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_gravity="bottom"
-            android:background="@drawable/borda_inferior" />
-
-        <!-- Texto de resultado -->
+        <!-- Saudação -->
         <TextView
-            android:id="@+id/tvResult"
+            android:id="@+id/txtWelcome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Iniciando..."
-            android:textColor="@android:color/white"
-            android:background="#80000000"
-            android:padding="8dp"
-            android:layout_gravity="bottom|start"
-            android:layout_margin="12dp" />
+            android:text="Bem-vindo(a)!"
+            android:textSize="26sp"
+            android:fontFamily="@font/poppins_semibold"
+            android:textColor="#1C1C1E"
+            android:layout_marginBottom="8dp" />
 
-        <!-- Botão voltar -->
-        <ImageButton
-            android:id="@+id/btn_voltar"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_margin="16dp"
-            android:background="@android:color/transparent"
-            android:src="@android:drawable/ic_menu_revert"
-            android:contentDescription="Voltar"
-            app:tint="@android:color/white" />
+        <!-- Email do usuário -->
+        <TextView
+            android:id="@+id/txtUserEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="carregando e-mail..."
+            android:textSize="16sp"
+            android:fontFamily="@font/poppins_regular"
+            android:textColor="#6E6E6E"
+            android:layout_marginBottom="40dp" />
 
-    </FrameLayout>
-</LinearLayout>
+        <!-- Botão Iniciar Análise -->
+        <Button
+            android:id="@+id/btnStartAnalysis"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Iniciar Análise"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            android:fontFamily="@font/poppins_semibold"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/btn_ripple_black_border_yellow"
+            android:elevation="3dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Botão Ver Perfil -->
+        <Button
+            android:id="@+id/btnViewProfile"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Ver Perfil"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            android:fontFamily="@font/poppins_semibold"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/btn_ripple_black_border_yellow"
+            android:elevation="3dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Botão Relatório Diário -->
+        <Button
+            android:id="@+id/btnDailyReport"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Relatório Diário"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            android:fontFamily="@font/poppins_semibold"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/btn_ripple_black_border_yellow"
+            android:elevation="3dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Botão Sair -->
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Sair da Conta"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            android:fontFamily="@font/poppins_semibold"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/btn_ripple_black_border_yellow"
+            android:elevation="3dp"
+            android:layout_marginBottom="8dp" />
+
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F4F5EF"
+    android:fitsSystemWindows="true">
+
+    <!-- Toolbar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/reportToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#F4F5EF"
+        app:navigationIcon="@drawable/ic_back"
+        app:title="Relatório Diário"
+        app:titleTextColor="#1C1C1E"
+        app:titleCentered="true"
+        android:elevation="4dp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <!-- Cabeçalho -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="20dp">
+
+                <Button
+                    android:id="@+id/btnSelectDate"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="52dp"
+                    android:text="📅 Escolher Data"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:textColor="#FFFFFF"
+                    android:background="@drawable/btn_blue_gradient"
+                    android:elevation="3dp"
+                    android:layout_marginEnd="10dp" />
+
+                <Spinner
+                    android:id="@+id/spinnerChartType"
+                    android:layout_width="140dp"
+                    android:layout_height="52dp"
+                    android:background="@drawable/spinner_background"
+                    android:spinnerMode="dropdown"
+                    android:padding="8dp"
+                    android:dropDownVerticalOffset="10dp" />
+            </LinearLayout>
+
+            <!-- Card dos gráficos -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/card_bg"
+                android:padding="16dp"
+                android:elevation="2dp">
+
+                <TextView
+                    android:id="@+id/tvChartTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Distribuição de Estados"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:textColor="#1C1C1E"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center" />
+
+                <com.github.mikephil.charting.charts.PieChart
+                    android:id="@+id/pieChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="260dp" />
+
+                <com.github.mikephil.charting.charts.HorizontalBarChart
+                    android:id="@+id/barChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="260dp"
+                    android:visibility="gone" />
+
+                <com.github.mikephil.charting.charts.RadarChart
+                    android:id="@+id/radarChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="260dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- Cards interativos -->
+            <LinearLayout
+                android:id="@+id/containerSummary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/card_bg"
+                android:padding="16dp"
+                android:layout_marginTop="20dp"
+                android:elevation="2dp" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -27,21 +28,30 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
     }
 }
 
 dependencies {
-
+    // --- AndroidX Core ---
     implementation(libs.androidx.core.ktx)
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("com.google.android.material:material:1.9.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.activity:activity-ktx:1.8.0")
+
+    // --- Compose ---
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
@@ -49,26 +59,38 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.genai.common)
     implementation(libs.androidx.activity)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation("androidx.core:core-ktx:1.10.1")
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("com.google.android.material:material:1.9.0")
-    val cameraXVersion = "1.4.0" // versão compatível com AndroidX CameraX; ajuste se quiser
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    // --- CameraX (versão padronizada 1.4.0) ---
+    val cameraXVersion = "1.4.0"
     implementation("androidx.camera:camera-core:$cameraXVersion")
     implementation("androidx.camera:camera-camera2:$cameraXVersion")
     implementation("androidx.camera:camera-lifecycle:$cameraXVersion")
-    implementation("androidx.camera:camera-view:1.2.0-alpha11")
+    implementation("androidx.camera:camera-view:$cameraXVersion")
+
+    // --- MediaPipe e IA ---
     implementation("com.google.mediapipe:tasks-vision:0.20230731")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.activity:activity-ktx:1.8.0")
     implementation("org.tensorflow:tensorflow-lite-select-tf-ops:2.14.0")
     implementation("com.microsoft.onnxruntime:onnxruntime-android:1.17.0")
+
+    // --- Firebase ---
+    implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
+
+    // --- Outras dependências úteis ---
+    implementation(libs.genai.common)
+    implementation("androidx.core:core-ktx:1.10.1")
+
+    // --- Testes ---
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }

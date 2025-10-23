@@ -4,5 +4,29 @@
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
         <!-- personalizações opcionais -->
         <item name="android:windowFullscreen">false</item>
+        <item name="android:fitsSystemWindows">true</item>
     </style>
+    <!-- Tema personalizado para o painel (BottomSheetDialog) -->
+    <style name="BottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
+    </style>
+
+    <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/rounded_bottom_sheet_bg</item>
+    </style>
+
+    <style name="AlertDialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="android:background">#FFEEEE</item>
+        <item name="android:windowMinWidthMajor">90%</item>
+        <item name="android:windowMinWidthMinor">90%</item>
+    </style>
+    <style name="RoundedDialog" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/dialog_bg_blur</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.6</item>
+        <item name="android:windowMinWidthMajor">90%</item>
+        <item name="android:windowMinWidthMinor">90%</item>
+    </style>
+
+
 </resources>

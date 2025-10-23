@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F4F5EF"
+    tools:context=".HistoryActivity">
+
+    <!-- Toolbar personalizada -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/historyToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#222222"
+        android:elevation="4dp"
+        app:title="Histórico de Eventos"
+        app:titleTextColor="#FFFFFF"
+        app:navigationIcon="@drawable/ic_back"
+        android:paddingHorizontal="12dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <!-- Título secundário -->
+    <TextView
+        android:id="@+id/txtHistorySubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Veja seus registros de análise"
+        android:textColor="#6E6E6E"
+        android:textSize="15sp"
+        android:fontFamily="@font/poppins_regular"
+        android:layout_margin="16dp" />
+
+    <!-- Lista de histórico -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewHistory"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingHorizontal="16dp"
+        android:clipToPadding="false"
+        android:scrollbars="vertical"
+        tools:listitem="@layout/item_history" />
+
+</LinearLayout>

@@ -1,17 +1,24 @@
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- sombra amarela -->
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#FFB300"
+                android:endColor="#FF8F00"
+                android:angle="90" />
+            <corners android:radius="50dp" />
+            <shadowColor>#33000000</shadowColor>
+            <stroke android:width="2dp" android:color="#FFD166" />
+        </shape>
+    </item>
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="#FFD54F"/> <!-- Amarelo suave -->
-            <corners android:radius="50dp"/>
+            <gradient
+                android:startColor="#222222"
+                android:endColor="#111111"
+                android:angle="90" />
+            <corners android:radius="50dp" />
+            <stroke android:width="2dp" android:color="#FFD166" />
         </shape>
     </item>
-
-    <!-- botão preto por cima -->
-    <item android:top="4dp"> <!-- desloca pra criar efeito de sombra -->
-        <shape android:shape="rectangle">
-            <solid android:color="#222222"/> <!-- Preto -->
-            <corners android:radius="50dp"/>
-        </shape>
-    </item>
-</layer-list>
+</selector>
