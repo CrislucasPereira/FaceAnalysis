@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#F4F5EF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="32dp">
+
+        <!-- Ícone de voltar -->
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="start"
+            android:layout_marginBottom="16dp"
+            android:src="@drawable/ic_back"
+            android:contentDescription="Voltar" />
+
+        <!-- Título -->
+        <TextView
+            android:id="@+id/txtLoginTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Login"
+            android:textColor="#222222"
+            android:textSize="32sp"
+            android:fontFamily="@font/poppins_semibold"
+            android:layout_marginBottom="32dp" />
+
+        <!-- Campo Email -->
+        <EditText
+            android:id="@+id/edtEmail"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="E-mail"
+            android:inputType="textEmailAddress"
+
+            android:background="@drawable/field_bg"
+            android:paddingHorizontal="16dp"
+            android:textColor="#222222"
+            android:textColorHint="#AAAAAA"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Campo Senha -->
+        <EditText
+            android:id="@+id/edtPassword"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Senha"
+            android:inputType="textPassword"
+            android:background="@drawable/field_bg"
+            android:paddingHorizontal="16dp"
+            android:textColor="#222222"
+            android:textColorHint="#AAAAAA"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Esqueci senha -->
+        <TextView
+            android:id="@+id/txtForgotPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Esqueci a senha"
+            android:textColor="#FFB300"
+            android:textSize="14sp"
+            android:fontFamily="@font/poppins_medium"
+            android:layout_gravity="end"
+            android:layout_marginBottom="32dp" />
+
+
+        <!-- Botão de Login -->
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="Login"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/btn_ripple_black_border_yellow"
+            android:layout_marginBottom="24dp"
+            android:elevation="2dp" />
+
+        <!-- Criar conta -->
+        <TextView
+            android:id="@+id/txtRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Criar conta"
+            android:textColor="#FFB300"
+            android:textSize="15sp"
+            android:fontFamily="@font/poppins_medium"
+            android:layout_gravity="center" />
+
+
+    </LinearLayout>
+</ScrollView>

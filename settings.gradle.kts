@@ -8,16 +8,19 @@ pluginManagement {
             }
         }
         mavenCentral()
+        maven("https://jitpack.io")
         gradlePluginPortal()
     }
 }
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT) // ✅ em vez de FAIL_ON_PROJECT_REPOS
     repositories {
         google()
         mavenCentral()
+        maven("https://jitpack.io") // ✅ força o uso do JitPack
     }
 }
+
 
 rootProject.name = "FaceAnalysis"
 include(":app")

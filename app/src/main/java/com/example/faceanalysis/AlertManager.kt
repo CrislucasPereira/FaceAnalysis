@@ -12,6 +12,11 @@ class AlertManager(private val context: Context) {
     private var soundBocejo: Int = 0
     private var soundNoFace: Int = 0
 
+    // Evita disparar o mesmo som várias vezes seguidas
+    private var lastEventPlayed: String? = null
+    private var lastPlayTime: Long = 0L
+    private val MIN_INTERVAL_MS = 3000L // intervalo mínimo entre sons iguais
+
     companion object {
         private const val TAG = "AlertManager"
     }
@@ -32,12 +37,22 @@ class AlertManager(private val context: Context) {
             soundBocejo = soundPool!!.load(context, R.raw.alerta_bocejo, 1)
             soundNoFace = soundPool!!.load(context, R.raw.alerta_falta_rosto, 1)
 
+            Log.d(TAG, "🎧 Sons carregados com sucesso")
+
         } catch (e: Exception) {
             Log.e(TAG, "Erro ao inicializar sons: ${e.message}")
         }
     }
 
     fun handleEvent(event: String) {
+        val now = System.currentTimeMillis()
+
+        // Evita som repetido em menos de 3 segundos
+        if (event == lastEventPlayed && (now - lastPlayTime < MIN_INTERVAL_MS)) {
+            Log.d(TAG, "🔇 Ignorado som duplicado de $event")
+            return
+        }
+
         when (event) {
             "Microsleep" -> {
                 soundPool?.play(soundMicrosleep, 1f, 1f, 1, 0, 1f)
@@ -47,14 +62,21 @@ class AlertManager(private val context: Context) {
                 soundPool?.play(soundBocejo, 1f, 1f, 1, 0, 1f)
                 Log.d(TAG, "🔊 Som Bocejo ativado")
             }
+            "Desatenção" -> {
+                soundPool?.play(soundBocejo, 1f, 1f, 1, 0, 1f)
+                Log.d(TAG, "🔊 Som Desatenção (usa mesmo áudio do bocejo)")
+            }
             "SemRosto" -> {
                 soundPool?.play(soundNoFace, 1f, 1f, 1, 0, 1f)
                 Log.d(TAG, "🔊 Som Falta de Rosto ativado")
             }
             else -> {
-                // Evento ignorado sem log
+                Log.d(TAG, "⚪ Evento sem som configurado: $event")
             }
         }
+
+        lastEventPlayed = event
+        lastPlayTime = now
     }
 
     fun release() {

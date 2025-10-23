@@ -1,0 +1,19 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- sombra amarela embaixo -->
+    <item android:bottom="4dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#FFD54F"/> <!-- Amarelo suave -->
+            <corners android:radius="50dp"/>
+        </shape>
+    </item>
+
+    <!-- botão preto por cima -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#222222"/> <!-- Preto -->
+            <corners android:radius="50dp"/>
+        </shape>
+    </item>
+
+</layer-list>

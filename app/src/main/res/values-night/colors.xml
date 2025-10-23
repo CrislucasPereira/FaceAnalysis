@@ -1,0 +1,11 @@
+<resources>
+    <color name="driveon_yellow">#F4C542</color>
+    <color name="driveon_gray_dark">#E9E9E9</color>
+    <color name="driveon_gray_medium">#BDBDBD</color>
+    <color name="driveon_background">#2E2E2E</color>
+    <color name="driveon_top">#3A3A3A</color>
+    <color name="driveon_white">#121212</color>
+
+    <color name="driveon_success">#81C784</color>
+    <color name="driveon_error">#E57373</color>
+</resources>

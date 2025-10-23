@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- ATENÇÃO: Verifique se android.permission.RECORD_AUDIO é realmente necessário. -->
+    <!-- Se for apenas para REPRODUZIR sons de alerta, esta permissão NÃO é geralmente necessária. -->
+    <!-- Mantenha apenas se seu app precisa GRAVAR áudio. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-feature android:name="android.hardware.camera.front" android:required="false" />
-    <uses-feature android:name="android.hardware.camera" android:required="true" />
+
+    <uses-feature
+        android:name="android.hardware.camera.front"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -15,16 +25,55 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme">
+            android:name=".ReportActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PrivacyActivity"
+            android:exported="false" /> <!-- Verifique se 'AppTheme' é apropriado para Toolbars -->
+        <!-- HomeActivity: A TELA INICIAL do seu aplicativo. Ela vai checar o status de login e redirecionar. -->
+        <activity
+            android:name=".HomeActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity> <!-- LoginActivity: Tela de Login/Cadastro. Acessada pela HomeActivity se não estiver logado. -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" /> <!-- RegisterActivity: Tela de registro de novos usuários. -->
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="false"
+            android:parentActivityName=".LoginActivity" /> <!-- Pai é a LoginActivity -->
+        <!-- ForgotPasswordActivity: Tela para recuperação de senha. -->
+        <activity
+            android:name=".ForgotPasswordActivity"
+            android:exported="false"
+            android:parentActivityName=".LoginActivity" /> <!-- Pai é a LoginActivity -->
+        <!-- AnalysisActivity: A tela com a câmera e análise de IA. -->
+        <activity
+            android:name=".AnalysisActivity"
+            android:exported="false"
+            android:parentActivityName=".HomeActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" /> <!-- ProfileActivity: Tela para ver o perfil do usuário. -->
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false"
+            android:parentActivityName=".HomeActivity" /> <!-- Pai é a HomeActivity -->
+        <!-- HistoryActivity: A tela para ver o histórico de eventos. -->
+        <activity
+            android:name=".HistoryActivity"
+            android:exported="false"
+            android:parentActivityName=".AnalysisActivity" /> <!-- Pai é a AnalysisActivity -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

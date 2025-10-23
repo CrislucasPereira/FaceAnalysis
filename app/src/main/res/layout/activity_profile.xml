@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#F4F5EF"
+    android:fillViewport="true"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="32dp">
+
+        <!-- Avatar com fundo circular -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            app:cardCornerRadius="60dp"
+            app:cardElevation="6dp"
+            app:cardBackgroundColor="#FFFFFF"
+            android:layout_marginBottom="24dp">
+
+            <ImageView
+                android:id="@+id/imgProfileLogo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_face"
+                android:padding="16dp"
+                android:contentDescription="Logo do App" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- Título -->
+        <TextView
+            android:id="@+id/txtProfileTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Perfil do Usuário"
+            android:textSize="26sp"
+            android:textColor="#1C1C1E"
+            android:fontFamily="@font/poppins_semibold"
+            android:layout_marginBottom="28dp" />
+
+        <!-- E-mail -->
+        <TextView
+            android:id="@+id/txtProfileEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📧 E-mail:"
+            android:textSize="18sp"
+            android:textColor="#333333"
+            android:fontFamily="@font/poppins_regular"
+            android:layout_marginBottom="10dp" />
+
+        <!-- UID -->
+        <TextView
+            android:id="@+id/txtProfileUid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🆔 UID:"
+            android:textSize="16sp"
+            android:textColor="#555555"
+            android:fontFamily="@font/poppins_regular"
+            android:layout_marginBottom="10dp" />
+
+        <!-- Status -->
+        <TextView
+            android:id="@+id/txtProfileStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Status da Conta"
+            android:textSize="16sp"
+            android:textColor="#666666"
+            android:fontFamily="@font/poppins_regular"
+            android:layout_marginBottom="40dp" />
+
+        <!-- Botão Voltar -->
+        <Button
+            android:id="@+id/btnBackToMain"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Voltar ao Início"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            android:fontFamily="@font/poppins_semibold"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/btn_ripple_black_border_yellow"
+            android:elevation="3dp" />
+    </LinearLayout>
+</ScrollView>

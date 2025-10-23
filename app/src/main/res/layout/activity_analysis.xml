@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    tools:context=".AnalysisActivity">
+
+    <!-- Preview da câmera -->
+    <androidx.camera.view.PreviewView
+        android:id="@+id/previewView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        tools:ignore="MissingClass"
+        tools:background="@drawable/face_placeholder" />
+
+    <!-- Overlay dos pontos faciais -->
+    <com.example.faceanalysis.OverlayView
+        android:id="@+id/overlayView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Toolbar moderna -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/analysisToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#222222"
+        android:elevation="8dp"
+        app:title="Análise Facial"
+        app:titleTextColor="#FFFFFF"
+        app:navigationIcon="@drawable/ic_back"
+        android:paddingHorizontal="12dp" />
+
+    <!-- Caixa de status refinada -->
+    <LinearLayout
+        android:id="@+id/statusBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@drawable/status_box_bg"
+        android:layout_gravity="bottom"
+        android:layout_margin="20dp"
+        android:elevation="6dp">
+
+        <!-- Status principal -->
+        <TextView
+            android:id="@+id/tvResult"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status: Iniciando..."
+            android:textColor="#FFFFFF"
+            android:textSize="17sp"
+            android:fontFamily="@font/poppins_semibold"
+            android:layout_marginBottom="4dp" />
+
+        <!-- Mensagem adicional -->
+        <TextView
+            android:id="@+id/tvAdditionalInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Aguardando detecção facial..."
+            android:textColor="#D0D0D0"
+            android:textSize="14sp"
+            android:fontFamily="@font/poppins_regular"
+            android:layout_marginBottom="6dp" />
+
+        <!-- 🔢 Contadores em tempo real -->
+        <TextView
+            android:id="@+id/tvCounters"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Microsleep: 0.0s / 2.0s\nYaw: 0.0s / 3.0s\nBocejos: 0 / 4"
+            android:textColor="#BBBBBB"
+            android:textSize="13sp"
+            android:fontFamily="@font/poppins_regular"
+            android:layout_marginTop="4dp" />
+    </LinearLayout>
+</FrameLayout>

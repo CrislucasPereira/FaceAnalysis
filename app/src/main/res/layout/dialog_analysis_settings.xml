@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/dialog_bg_blur"
+    android:padding="24dp">
+
+    <!-- Título -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="⚙️ Configurações de Análise"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:fontFamily="@font/poppins_semibold"
+        android:gravity="center"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Exibir pontos faciais -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Exibir pontos faciais"
+            android:textColor="#E0E0E0"
+            android:textSize="15sp"
+            android:fontFamily="@font/poppins_regular" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchShowLandmarks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:thumbTint="#FFB300"
+            android:trackTint="#666666"
+            tools:ignore="TouchTargetSizeCheck" />
+    </LinearLayout>
+
+    <!-- Descrição -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mostra ou oculta os landmarks durante a análise."
+        android:textColor="#AAAAAA"
+        android:textSize="13sp"
+        android:layout_marginBottom="20dp" />
+
+    <!-- Sensibilidade -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sensibilidade de Detecção"
+        android:textColor="#E0E0E0"
+        android:textSize="15sp"
+        android:fontFamily="@font/poppins_regular"
+        android:layout_marginBottom="8dp" />
+
+    <Spinner
+        android:id="@+id/spinnerSensitivity"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/spinner_bg_dark"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:popupBackground="#2A2A2A"
+        android:textAlignment="center" />
+
+    <!-- Botão fechar -->
+    <Button
+        android:id="@+id/btnCloseDialog"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="@string/fechar"
+        android:textAllCaps="false"
+        android:fontFamily="@font/poppins_semibold"
+        android:textColor="#1C1C1E"
+        android:textSize="16sp"
+        android:layout_marginTop="28dp"
+        android:backgroundTint="#FFB300"
+        android:elevation="4dp" />
+</LinearLayout>

@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">FaceAnalysis</string>
+    <string name="app_name">DriveON</string>
+    <string name="drive">Drive</string>
+    <string name="on">On</string>
+    <string name="terms_text">
+        Concordo com os <b><u>Termos de Uso</u></b> e Política de Privacidade.
+    </string>
+    <string name="fechar">Fechar</string>
 </resources>

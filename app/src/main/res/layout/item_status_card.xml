@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/card_inner_bg"
+    android:padding="12dp"
+    android:layout_marginBottom="10dp">
+
+    <LinearLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvStatusName"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Microsleep"
+            android:textColor="#1C1C1E"
+            android:textSize="16sp"
+            android:fontFamily="@font/poppins_semibold" />
+
+        <TextView
+            android:id="@+id/tvTotalTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0.5 min"
+            android:textColor="#1C1C1E"
+            android:textSize="15sp"
+            android:fontFamily="@font/poppins_medium" />
+
+        <ImageView
+            android:id="@+id/iconExpand"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/ic_arrow_down"
+            android:tint="#616161" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/detailsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:paddingTop="8dp">
+
+        <TextView
+            android:id="@+id/tvOccurrences"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ocorrências: 3"
+            android:textColor="#424242"
+            android:textSize="14sp"
+            android:fontFamily="@font/poppins_regular" />
+
+        <TextView
+            android:id="@+id/tvAvgDuration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Duração média: 12s"
+            android:textColor="#424242"
+            android:textSize="14sp"
+            android:fontFamily="@font/poppins_regular" />
+
+        <TextView
+            android:id="@+id/tvTimeRange"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Primeiro: 14:33 / Último: 14:47"
+            android:textColor="#424242"
+            android:textSize="14sp"
+            android:fontFamily="@font/poppins_regular" />
+    </LinearLayout>
+</LinearLayout>

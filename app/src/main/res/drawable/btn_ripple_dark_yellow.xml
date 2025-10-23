@@ -1,0 +1,9 @@
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="#33FFFFFF"> <!-- Cor do efeito ripple -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="16dp" />
+            <solid android:color="#FFB300" /> <!-- cor do botão -->
+        </shape>
+    </item>
+</ripple>

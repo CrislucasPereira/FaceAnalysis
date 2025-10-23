@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#88000000"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center">
+
+    <TextView
+        android:id="@+id/tvWarning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="⚠️ ATENÇÃO! SINAIS DE SONO DETECTADOS\nProcure parar e descansar."
+        android:textColor="#FF4444"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:padding="16dp" />
+
+    <Button
+        android:id="@+id/btnOk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="OK"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#FF4444"
+        android:textColor="@android:color/white" />
+</LinearLayout>
