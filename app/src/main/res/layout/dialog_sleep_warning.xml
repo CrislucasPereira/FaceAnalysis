@@ -1,29 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="#88000000"
-    android:orientation="vertical"
-    android:padding="24dp"
-    android:gravity="center">
+    android:layout_height="match_parent"
+    android:background="#FF0000">  <!-- fundo vermelho intenso -->
 
-    <TextView
-        android:id="@+id/tvWarning"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="⚠️ ATENÇÃO! SINAIS DE SONO DETECTADOS\nProcure parar e descansar."
-        android:textColor="#FF4444"
-        android:textStyle="bold"
-        android:textSize="20sp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
         android:gravity="center"
-        android:padding="16dp" />
+        android:padding="32dp">
 
-    <Button
-        android:id="@+id/btnOk"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="OK"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="#FF4444"
-        android:textColor="@android:color/white" />
-</LinearLayout>
+        <TextView
+            android:id="@+id/tvWarning"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="⚠️ SINAIS DE SONO DETECTADOS ⚠️\n\nPare o veículo com segurança e descanse!"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:textSize="24sp"
+            android:gravity="center"
+            android:padding="24dp" />
+
+        <Button
+            android:id="@+id/btnOk"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:backgroundTint="#000000"
+            android:textColor="#FFFFFF"
+            android:text="ENTENDIDO"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:padding="16dp" />
+    </LinearLayout>
+</FrameLayout>

@@ -34,8 +34,10 @@ import kotlin.math.*
 
 class AnalysisActivity : AppCompatActivity() {
 
-    private var showLandmarks: Boolean = true // 👈 ADICIONE ISSO AQUI
-    private var sensitivityLevel: String = "Média" // 👈 opcional, se ainda não existir
+    private lateinit var alertManager: AlertManager
+
+    private var showLandmarks: Boolean = true
+    private var sensitivityLevel: String = "Média"
     private lateinit var previewView: PreviewView
     private lateinit var tvResult: TextView
     private lateinit var tvAdditionalInfo: TextView
@@ -115,6 +117,7 @@ class AnalysisActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        alertManager = AlertManager(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_analysis)
 
@@ -506,11 +509,27 @@ class AnalysisActivity : AppCompatActivity() {
                 mouthOpen = false
                 yawnCount++
 
+                handleEventTransition("Bocejo")
+                addEventToHistory("Bocejo")
+
+                saveEventToFirebase(
+                    status = "Bocejo",
+                    start = now - 500L,
+                    end = now,
+                    duration = 500L,
+                    ear = lastEar,
+                    mar = lastMar,
+                    yaw = lastYaw,
+                    conf = lastConf
+                )
+
+                Log.d(TAG, "Bocejo detectado e salvo no Firebase")
+
                 if (yawnCount >= yawnNeeded) {
                     // mostra alerta de sonolência
                     showSleepWarningDialog()
 
-                    // registra o evento no histórico
+                    // registra o evento de sonolência
                     handleEventTransition("Sinais de Sono")
                     addEventToHistory("Sinais de Sono")
 
@@ -624,6 +643,19 @@ class AnalysisActivity : AppCompatActivity() {
             eventStartTime = now
             Log.d(TAG, "Novo evento iniciado: $newLabel às $now")
         }
+
+        when (newLabel) {
+            "Microsleep" -> alertManager.playMicrosleep()
+            "Desatenção" -> alertManager.startDesattentionLoop()
+            "Bocejo" -> alertManager.startBocejoLoop()
+            "Sem Rosto" -> alertManager.playSemRosto()
+            "Atento", "Alerta" -> {
+                alertManager.stopMicrosleep()
+                alertManager.stopDesattentionLoop()
+                alertManager.stopBocejoLoop()
+            }
+        }
+
     }
 
     private fun showSleepWarningDialog() {
@@ -774,6 +806,7 @@ class AnalysisActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        alertManager.release()
         closeOngoingEventIfAny()
         try {
             cameraExecutor.shutdown()

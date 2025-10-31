@@ -73,11 +73,12 @@ class ReportActivity : AppCompatActivity() {
                 MotionEvent.ACTION_DOWN -> v.animate().scaleX(0.96f).scaleY(0.96f).setDuration(80).start()
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     v.animate().scaleX(1f).scaleY(1f).setDuration(100).start()
-                    v.performClick()
+                    showDatePicker()
                 }
             }
-            false
+            true
         }
+
         btnSelectDate.setOnClickListener { showDatePicker() }
 
         loadEventsForDate(calendar.time)
