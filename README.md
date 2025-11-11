@@ -1,6 +1,6 @@
-﻿<div align="center">
+<div align="center">
 
-# DriveON - Face Analysis (Android)
+# DriveON – Face Analysis (Android)
 
 Análise em tempo real de fadiga do motorista usando CameraX + MediaPipe + ONNX, com alertas sonoros e histórico no Firebase.
 
@@ -8,39 +8,70 @@ Análise em tempo real de fadiga do motorista usando CameraX + MediaPipe + ONNX,
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-7F52FF?logo=kotlin)
 ![Gradle](https://img.shields.io/badge/Gradle-8.13-02303A?logo=gradle)
 ![AGP](https://img.shields.io/badge/AGP-8.12.3-3DDC84?logo=android)
-![License](https://img.shields.io/badge/License-TBD-lightgrey)
 
 </div>
 
 ## Visão Geral
-O DriveON é um app Android que detecta sinais de fadiga do motorista a partir de landmarks faciais (MediaPipe) e classificação temporal (modelo ONNX). O app:
-- Mostra overlay dos pontos faciais em tempo real (CameraX).
-- Emite alertas sonoros (microsleep e bocejo) e diálogo de atenção.
-- Registra eventos no Firestore (com métricas) e apresenta relatórios diários.
-- Mantém sessão de login persistida e funciona offline após o primeiro login (cache do Firestore).
+O DriveON detecta sinais de fadiga a partir de landmarks faciais (MediaPipe) e classificação temporal (modelo ONNX). Ele:
+- Mostra overlay de pontos faciais em tempo real (CameraX)
+- Emite alertas (Microsleep e Bocejo) e exibe aviso de “Sinais de sono”
+- Registra eventos no Firestore e apresenta relatórios diários
+- Mantém sessão de login persistida e funciona offline após o primeiro login
 
 ## Recursos
-- CameraX (frontal) com processamento contínuo.
-- MediaPipe Face Landmarker para landmarks faciais.
-- Classificação temporal com ONNX Runtime (Microsleep/Bocejo/Atento).
-- Alertas sonoros (loops/bipes) e aviso de “Sinais de sono”.
-- Histórico + relatórios (Pizza/Barras/Radar) com legendas que não sobrepõem.
+- CameraX (frontal) com processamento contínuo
+- MediaPipe Face Landmarker (landmarks 3D/precisos)
+- ONNX Runtime para classificação temporal (Microsleep/Bocejo/Atento)
+- Alertas sonoros (loops/bipes) via `AlertManager`
+- Relatórios (Pizza/Barras/Radar) com legendas que não se sobrepõem (word‑wrap)
+- Firestore com cache/persistência offline habilitado
 
-## Instalação rápida
-1. Adicione seu pp/google-services.json (não versionado neste repo público).
-2. Sincronize o Gradle e rode o módulo pp em um dispositivo real.
+## Arquitetura (alto nível)
+```
+CameraX -> Frames -> MediaPipe FaceLandmarker -> Landmarks
+       -> Extração de features (normalização + pontos) -> Buffer temporal (SEQ_LEN)
+       -> ONNX Runtime (LSTM) -> Decisão (microsleep/bocejo/atento)
+       -> UI (overlay + status + contadores) -> Alertas -> Firestore (events)
+```
+
+## Estrutura do Projeto
+```
+app/
+  src/main/java/com/example/faceanalysis/
+    AnalysisActivity.kt · AlertManager.kt · OverlayView.kt
+    LoginActivity.kt · RegisterActivity.kt · HomeActivity.kt · MainActivity.kt
+    ReportActivity.kt · ProfileActivity.kt · PrivacyActivity.kt
+  src/main/res/ (layouts, values, raw)
+  src/main/assets/ (face_landmarker.task, model_lstm_*.onnx)
+  AndroidManifest.xml
+```
+
+## Instalação
+1) Pré‑requisitos
+- Android Studio (Giraffe+), JDK 17
+- Dispositivo real com câmera frontal (recomendado)
+
+2) Firebase
+- Adicione seu arquivo `app/google-services.json` (não é versionado neste repositório público)
+- Habilite Auth por E‑mail/Senha no Firebase Console
+
+3) Build & Run
+- Sincronize o Gradle e execute o módulo `app` em um dispositivo real
 
 ## Firestore (estrutura e regras)
-`
+Estrutura de documentos dos eventos:
+
+```
 users/{uid}/events (document)
   status: "Microsleep" | "Bocejo" | "Atento" | "Sem Rosto" | "Sinais de Sono"
   startTime, endTime, duration (ms)
   ear, mar, confidence, device
   startReadable, endReadable
-`
+```
 
-Regras:
-`
+Regras sugeridas (copie e publique no editor de regras do Firestore):
+
+```
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -52,9 +83,22 @@ service cloud.firestore {
     }
   }
 }
-`
+```
 
-## Notas
-- Sessão persistida (auto‑login) e Firestore offline habilitado.
-- Overlay espelhado para câmera frontal e PreviewView illCenter para melhor alinhamento.
-- README simplificado aqui; veja o código para detalhes das telas e flows.
+## Notas Importantes
+- Sessão persistida (auto‑login) e Firestore offline habilitado
+- Overlay espelhado para câmera frontal e PreviewView `fillCenter` para melhor alinhamento
+- O arquivo `app/google-services.json` não deve ser versionado (já ignorado no `.gitignore`)
+
+## Troubleshooting
+- PERMISSION_DENIED no relatório: confira as regras acima e se o `uid` do documento em `users/{uid}` é o mesmo do usuário autenticado
+- “No chart data available” com eventos: verifique se o dia possui eventos ativos (Microsleep/Bocejo/Atento/Sem Rosto)
+- Build com pouca memória (Windows):
+  ```
+  ./gradlew.bat --stop
+  ./gradlew.bat clean :app:assembleDebug --no-daemon
+  ```
+
+## Licença
+Defina a licença do projeto (MIT/Apache 2.0, etc.) conforme sua necessidade.
+
