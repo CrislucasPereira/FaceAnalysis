@@ -4,11 +4,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
-import android.widget.*
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 
+/**
+ * Hub pos-login com atalhos para analise, perfil e relatorios.
+ * Mantem o usuario autenticado e aplica pequenas animacoes de toque.
+ */
 class MainActivity : AppCompatActivity() {
 
     private val TAG = "MainActivityHome"
@@ -26,17 +32,17 @@ class MainActivity : AppCompatActivity() {
         val btnDailyReport: Button = findViewById(R.id.btnDailyReport)
         val btnLogout: Button = findViewById(R.id.btnLogout)
 
-        // Exibe o email do usuário logado
+        // Exibe o email do usuario logado
         val currentUser = auth.currentUser
         if (currentUser != null) {
             txtUserEmail.text = currentUser.email
-            Log.d(TAG, "Usuário logado: ${currentUser.email}")
+            Log.d(TAG, "Usuario logado: ${currentUser.email}")
         } else {
-            Log.w(TAG, "Nenhum usuário logado. Redirecionando para Login.")
+            Log.w(TAG, "Nenhum usuario logado. Redirecionando para Login.")
             redirectToLogin()
         }
 
-        // ⚡ Animação padrão (escala suave)
+        // Animacao padrao (escala suave)
         fun applyButtonEffect(button: Button, action: () -> Unit) {
             button.setOnTouchListener { v, event ->
                 when (event.action) {
@@ -54,7 +60,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // 🚀 Navegação com efeito
+        // Navegacao com efeito
         applyButtonEffect(btnStartAnalysis) {
             startActivity(Intent(this, AnalysisActivity::class.java))
         }
@@ -69,15 +75,15 @@ class MainActivity : AppCompatActivity() {
 
         applyButtonEffect(btnLogout) {
             auth.signOut()
-            Toast.makeText(this, "Você saiu da conta.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Voce saiu da conta.", Toast.LENGTH_SHORT).show()
             redirectToLogin()
         }
 
-        // Botão voltar → minimiza app
+        // Botao voltar minimiza o app
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 moveTaskToBack(true)
-                Log.d(TAG, "Botão voltar: minimizando o app.")
+                Log.d(TAG, "Botao voltar: minimizando o app.")
             }
         })
     }
@@ -100,3 +106,4 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 }
+

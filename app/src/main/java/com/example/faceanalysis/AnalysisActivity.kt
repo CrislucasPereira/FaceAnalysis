@@ -32,10 +32,21 @@ import kotlin.collections.ArrayDeque
 import kotlin.math.*
 
 
+/**
+ * Tela principal de anolise facial em tempo real.
+ *
+ * Fluxo principal:
+ * - Inicializa MediaPipe FaceLandmarker e c?mera (CameraX).
+ * - Converte frames para Bitmap e executa detec??uo/landmarks.
+ * - Extrai features e classifica estados com modelo ONNX (microsleep, bocejo, etc.).
+ * - Atualiza UI/overlay e dispara alertas sonoros conforme regras.
+ * - Persiste eventos relevantes no Firestore (com timestamps e m?tricas).
+ */
 class AnalysisActivity : AppCompatActivity() {
 
-    private var showLandmarks: Boolean = true // 👈 ADICIONE ISSO AQUI
-    private var sensitivityLevel: String = "Média" // 👈 opcional, se ainda não existir
+    private lateinit var alertManager: AlertManager
+
+    // Removido: flags antigas nao utilizadas (showLandmarks, sensitivityLevel)
     private lateinit var previewView: PreviewView
     private lateinit var tvResult: TextView
     private lateinit var tvAdditionalInfo: TextView
@@ -70,25 +81,23 @@ class AnalysisActivity : AppCompatActivity() {
     private var lastYaw: Float = 0f
     private var lastConf: Float = 0f
 
-    // ⚙️ Sensibilidade
-    private var detectionSensitivity: String = "Media"
+    //Sensibilidade
+    private var detectionSensitivity: String = "Média"
 
-    // 💤 / 👁️ controle de estados e cronômetros
+    //Controle de estados e cronômetros
     private var inMicrosleep = false
-    private var inDesattention = false
     private var eyesClosedStartTime: Long = 0L
-    private var yawStartTime: Long = 0L
 
-    // 😮 Bocejo (contagem)
+    //Bocejo (contagem)
     private var yawnCount = 0
     private var mouthOpen = false
     private var yawnStartTime = 0L
 
-    // ⏱️ contadores visuais (milissegundos)
+    //Contadores visuais (milissegundos)
     private var microsleepMillis = 0L
-    private var yawMillis = 0L
+    // Removido: contadores de desatenção (yaw)
 
-    // Landmarks e índices
+    //Landmarks e Índices
     private val SELECTED_LANDMARKS = listOf(
         61, 40, 37, 0, 267, 270, 291,
         78, 95, 14, 317, 308,
@@ -105,7 +114,7 @@ class AnalysisActivity : AppCompatActivity() {
     private var currentFace: List<com.google.mediapipe.tasks.components.containers.NormalizedLandmark>? = null
 
     private var attentionRecoveryStartTime: Long = 0L
-    private var yawRecoveryStartTime: Long = 0L
+    // Removido: tempos de recuperação para desatenção
 
 
     companion object {
@@ -115,6 +124,7 @@ class AnalysisActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        alertManager = AlertManager(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_analysis)
 
@@ -131,6 +141,12 @@ class AnalysisActivity : AppCompatActivity() {
         analysisToolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         db = FirebaseFirestore.getInstance()
+        try {
+            val settings = com.google.firebase.firestore.FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build()
+            db.firestoreSettings = settings
+        } catch (_: Exception) { }
         auth = FirebaseAuth.getInstance()
         initOnnxModel()
 
@@ -213,7 +229,7 @@ class AnalysisActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        // Monta o diálogo estilizado
+        // Monta o diologo estilizado
         val dialog = android.app.AlertDialog.Builder(this, R.style.RoundedDialog)
             .setView(dialogView)
             .create()
@@ -230,13 +246,13 @@ class AnalysisActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    // --- Permissão de câmera ---
+    // --- Permissuo de câmera ---
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
             if (granted) { setupFaceLandmarker(); startCamera() }
             else {
-                tvResult.text = "Permissão de câmera negada"
-                Toast.makeText(this, "Permissão de câmera é necessária.", Toast.LENGTH_LONG).show()
+                tvResult.text = "Permissuo de c?mera negada"
+                Toast.makeText(this, "Permissuo de c?mera ? necessoria.", Toast.LENGTH_LONG).show()
                 finish()
             }
         }
@@ -265,12 +281,7 @@ class AnalysisActivity : AppCompatActivity() {
         else -> 2000L
     }
 
-    private fun yawThresholdMs(): Long = when (detectionSensitivity.lowercase()) {
-        "alta" -> 2000L
-        "média" -> 3000L
-        "baixa" -> 4000L
-        else -> 3000L
-    }
+    // Removido: threshold para Desatenção (yaw)
 
     private fun yawnRequiredCount(): Int = when (detectionSensitivity.lowercase()) {
         "alta" -> 2
@@ -299,15 +310,14 @@ class AnalysisActivity : AppCompatActivity() {
                     lastDetectionTime = System.currentTimeMillis()
                     val now = System.currentTimeMillis()
 
-                    // --- quando nenhum rosto é detectado ---
+                    // --- quando nenhum rosto detectado ---
                     if (faces.isEmpty()) {
                         runOnUiThread {
                             overlayView.setPoints(emptyList())
                             tvResult.text = "Status: Nenhum rosto detectado"
-                            tvAdditionalInfo.text = "Aguardando detecção facial..."
+                            tvAdditionalInfo.text = getString(R.string.waiting_face_detection)
                             tvCounters.text =
                                 "Microsleep: 0.0s / ${microsleepThresholdMs() / 1000.0}s\n" +
-                                        "Desatenção: 0.0s / ${yawThresholdMs() / 1000.0}s\n" +
                                         "Bocejos: 0 / ${yawnRequiredCount()}"
                         }
 
@@ -316,24 +326,21 @@ class AnalysisActivity : AppCompatActivity() {
                             attentionRecoveryStartTime = now
                         }
 
-                        // só registra evento se a ausência persistir por 2 segundos
+                        // só registra evento se a ausGncia persistir por 2 segundos
                         if (now - attentionRecoveryStartTime >= 2000L) {
                             if (lastEventSentToHistory != "Sem Rosto") {
                                 handleEventTransition("Sem Rosto")
                                 addEventToHistory("Sem Rosto")
-                                Log.d(TAG, "Rosto ausente por mais de 2s — evento registrado.")
+                                Log.d(TAG, "Rosto ausente por mais de 2s - evento registrado.")
                             }
                         }
 
-                        // reset de estados de análise
+                        // reset de estados de anolise
                         inMicrosleep = false
-                        inDesattention = false
                         eyesClosedStartTime = 0L
-                        yawStartTime = 0L
                         microsleepMillis = 0L
-                        yawMillis = 0L
 
-                        // impede processamento desnecessário
+                        // impede processamento desnecessorio
                         return@setResultListener
                     }
 
@@ -344,7 +351,7 @@ class AnalysisActivity : AppCompatActivity() {
                         handleEventTransition("Atento")
                         addEventToHistory("Atento")
                         eventStartTime = System.currentTimeMillis()
-                        Log.d(TAG, "Primeiro rosto detectado — iniciando estado Atento")
+                        Log.d(TAG, "Primeiro rosto detectado - iniciando estado Atento")
                     }
 
 
@@ -389,7 +396,7 @@ class AnalysisActivity : AppCompatActivity() {
         lastMar = calculateMAR(face)
         lastYaw = calculateYaw(face)
 
-        // Históricos simples (se quiser suavizar)
+        // Históricos simples
         if (earHistory.size >= HISTORY_SIZE) earHistory.removeFirst()
         earHistory.addLast(lastEar)
 
@@ -402,25 +409,23 @@ class AnalysisActivity : AppCompatActivity() {
         runOnUiThread {
             tvResult.text = "Status: $label"
             tvAdditionalInfo.text = when (label) {
-                "Microsleep detectado" -> { tvAdditionalInfo.setTextColor(Color.RED); "⚠️ Microsleep detectado!" }
-                "Desatenção detectada" -> { tvAdditionalInfo.setTextColor(Color.YELLOW); "⚠️ Desatenção detectada!" }
-                "Bocejo detectado"     -> { tvAdditionalInfo.setTextColor(Color.CYAN); "😮 Bocejo detectado!" }
-                "Atento"               -> { tvAdditionalInfo.setTextColor(Color.GREEN); "🟢 Atenção normal" }
+                "Microsleep detectado" -> { tvAdditionalInfo.setTextColor(Color.RED); "Microsleep detectado!" }
+                // Removido: mensagem de Desatenção
+                "Bocejo detectado"     -> { tvAdditionalInfo.setTextColor(Color.CYAN); "Bocejo detectado!" }
+                "Atento"               -> { tvAdditionalInfo.setTextColor(Color.GREEN); "Atenção normal" }
                 else                   -> { tvAdditionalInfo.setTextColor(Color.LTGRAY); label }
             }
 
             tvCounters.text =
                 "Microsleep: ${"%.1f".format(microsleepMillis/1000f)}s / ${"%.1f".format(microsleepThresholdMs()/1000f)}s\n" +
-                        "Desatenção: ${"%.1f".format(yawMillis/1000f)}s / ${"%.1f".format(yawThresholdMs()/1000f)}s\n" +
                         "Bocejos: $yawnCount / ${yawnRequiredCount()}"
         }
     }
 
-    // --- Lógica dos detectores + contadores (mantém ATENTO até atingir limite) ---
+    // --- Lógica dos detectores + contadores---
     private fun decideFinalLabelAndUpdateCounters(): String {
         val now = System.currentTimeMillis()
         val msThreshold = microsleepThresholdMs()
-        val yawThreshold = yawThresholdMs()
         val yawnNeeded = yawnRequiredCount()
         var status = "Atento"
 
@@ -459,41 +464,7 @@ class AnalysisActivity : AppCompatActivity() {
             }
         }
 
-        // --- DESATENÇÃO (YAW) ---
-        val yawNow = currentFace?.let { calculateYaw(it) } ?: 0f
-
-        if (yawNow > 0.35f) {
-            // cabeça virada
-            if (yawStartTime == 0L) yawStartTime = now
-            yawMillis = now - yawStartTime
-
-            if (!inDesattention && yawMillis >= yawThreshold) {
-                inDesattention = true
-                handleEventTransition("Desatenção")
-                addEventToHistory("Desatenção")
-            }
-
-            // resetar tempo de recuperação da atenção frontal
-            yawRecoveryStartTime = 0L
-
-        } else {
-            // cabeça centralizada
-            if (inDesattention) {
-                if (yawRecoveryStartTime == 0L)
-                    yawRecoveryStartTime = now
-
-                // só sai do estado após 1s de cabeça centralizada
-                if (now - yawRecoveryStartTime >= 1000L) {
-                    inDesattention = false
-                    handleEventTransition("Alerta")
-                    yawStartTime = 0L
-                    yawMillis = 0L
-                }
-            } else {
-                yawStartTime = 0L
-                yawMillis = 0L
-            }
-        }
+        // Removido: lógica de detecção de Desatenção (yaw)
 
 // --- BOCEJO ---
         if (yawnNeeded != Int.MAX_VALUE) {
@@ -506,19 +477,33 @@ class AnalysisActivity : AppCompatActivity() {
                 mouthOpen = false
                 yawnCount++
 
+                handleEventTransition("Bocejo")
+                addEventToHistory("Bocejo")
+
+                saveEventToFirebase(
+                    status = "Bocejo",
+                    start = now - 500L,
+                    end = now,
+                    duration = 500L,
+                    ear = lastEar,
+                    mar = lastMar,
+                    yaw = lastYaw,
+                    conf = lastConf
+                )
+
+                Log.d(TAG, "Bocejo detectado e salvo no Firebase")
+
                 if (yawnCount >= yawnNeeded) {
                     // mostra alerta de sonolência
                     showSleepWarningDialog()
 
-                    // registra o evento no histórico
+                    // registra o evento de sonolência
                     handleEventTransition("Sinais de Sono")
                     addEventToHistory("Sinais de Sono")
 
-                    // pausa estados ativos
+                    // pausa estados ativos relevantes
                     inMicrosleep = false
-                    inDesattention = false
                     eyesClosedStartTime = 0L
-                    yawStartTime = 0L
                 }
             }
         }
@@ -526,11 +511,10 @@ class AnalysisActivity : AppCompatActivity() {
 
         status = when {
             inMicrosleep -> "Microsleep detectado"
-            inDesattention -> "Desatenção detectada"
             else -> "Atento"
         }
 
-        if (!inMicrosleep && !inDesattention && !mouthOpen) {
+        if (!inMicrosleep && !mouthOpen) {
             handleEventTransition("Atento")
         }
 
@@ -594,7 +578,6 @@ class AnalysisActivity : AppCompatActivity() {
     private fun handleEventTransition(newLabel: String) {
         val now = System.currentTimeMillis()
 
-        // Se já há um evento ativo e o estado mudou → fecha o anterior
         if (currentEventLabel != null && currentEventLabel != newLabel) {
             val start = eventStartTime
             val end = now
@@ -618,12 +601,25 @@ class AnalysisActivity : AppCompatActivity() {
             }
         }
 
-        // Se o novo estado é diferente, inicia novo bloco
+        // Se o novo estado, diferente, inicia novo bloco
         if (currentEventLabel != newLabel) {
             currentEventLabel = newLabel
             eventStartTime = now
-            Log.d(TAG, "Novo evento iniciado: $newLabel às $now")
+            Log.d(TAG, "Novo evento iniciado: $newLabel ??s $now")
         }
+
+        when (newLabel) {
+            "Microsleep" -> alertManager.playMicrosleep()
+            // Removido: alerta de Desatenção
+            "Bocejo" -> alertManager.startBocejoLoop()
+            "Sem Rosto" -> alertManager.playSemRosto()
+            "Atento", "Alerta" -> {
+                alertManager.stopMicrosleep()
+                // Removido: parada de alerta de Desatenção
+                alertManager.stopBocejoLoop()
+            }
+        }
+
     }
 
     private fun showSleepWarningDialog() {
@@ -651,7 +647,7 @@ class AnalysisActivity : AppCompatActivity() {
                 dialog.dismiss()
                 yawnCount = 0
                 handleEventTransition("Alerta")
-                Toast.makeText(this, "Voltando à análise...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Voltando ?? anolise...", Toast.LENGTH_SHORT).show()
             }
 
             dialog.show()
@@ -659,7 +655,7 @@ class AnalysisActivity : AppCompatActivity() {
     }
 
 
-    // 🔥 Grava no Firestore
+    //Grava no Firestore
     private fun saveEventToFirebase(
         status: String,
         start: Long,
@@ -753,12 +749,12 @@ class AnalysisActivity : AppCompatActivity() {
             cameraProvider.bindToLifecycle(
                 this, CameraSelector.DEFAULT_FRONT_CAMERA, preview, imageAnalysis
             )
-            Log.i(TAG, "Câmera iniciada com sucesso")
+            Log.i(TAG, "C?mera iniciada com sucesso")
         }, ContextCompat.getMainExecutor(this))
     }
 
 
-    // --- Conversão ImageProxy → Bitmap ---
+    // --- Conversuo ImageProxy -> Bitmap ---
     fun ImageProxy.toBitmap(): Bitmap? {
         return try {
             val yuvToRgbConverter = YuvToRgbConverter(this@AnalysisActivity)
@@ -774,6 +770,7 @@ class AnalysisActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        alertManager.release()
         closeOngoingEventIfAny()
         try {
             cameraExecutor.shutdown()
@@ -819,7 +816,7 @@ class AnalysisActivity : AppCompatActivity() {
             faceLandmarker?.close()
             faceLandmarker = null
             setupFaceLandmarker()
-            Log.w(TAG, "FaceLandmarker reiniciado após falha")
+            Log.w(TAG, "FaceLandmarker reiniciado ap??s falha")
         } catch (e: Exception) {
             Log.e(TAG, "Erro ao reiniciar Landmarker: ${e.message}")
         }
@@ -833,7 +830,7 @@ class AnalysisActivity : AppCompatActivity() {
             }
             startCamera()
         } catch (e: Exception) {
-            Log.e(TAG, "Erro ao retomar câmera: ${e.message}")
+            Log.e(TAG, "Erro ao retomar c?mera: ${e.message}")
         }
     }
 

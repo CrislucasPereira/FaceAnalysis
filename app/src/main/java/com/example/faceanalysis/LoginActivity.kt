@@ -1,4 +1,4 @@
-package com.example.faceanalysis
+﻿package com.example.faceanalysis
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -6,9 +6,17 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.widget.*
+import android.text.method.PasswordTransformationMethod
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 
+/**
+ * Tela de autenticacao por e-mail/senha (Firebase Auth).
+ *
+ * - Valida campos minimos.
+ * - Mostra feedback visual em toques.
+ * - Redireciona para a tela principal apos sucesso.
+ */
 class LoginActivity : AppCompatActivity() {
 
     private val TAG = "LoginActivity"
@@ -25,10 +33,26 @@ class LoginActivity : AppCompatActivity() {
         val edtEmail = findViewById<EditText>(R.id.edtEmail)
         val edtPassword = findViewById<EditText>(R.id.edtPassword)
         val btnLogin = findViewById<Button>(R.id.btnLogin)
+        val btnToggle = findViewById<ImageButton>(R.id.btnTogglePasswordLogin)
         val txtForgotPassword = findViewById<TextView>(R.id.txtForgotPassword)
         val txtRegister = findViewById<TextView>(R.id.txtRegister)
 
-        // 🔙 Ícone de voltar
+        // Força sempre oculto por padrão e adiciona toggle de visibilidade
+        edtPassword.transformationMethod = PasswordTransformationMethod.getInstance()
+        var showing = false
+        btnToggle?.setOnClickListener {
+            showing = !showing
+            if (showing) {
+                edtPassword.transformationMethod = null
+                btnToggle.setImageResource(R.drawable.ic_visibility)
+            } else {
+                edtPassword.transformationMethod = PasswordTransformationMethod.getInstance()
+                btnToggle.setImageResource(R.drawable.ic_visibility_off)
+            }
+            edtPassword.setSelection(edtPassword.text?.length ?: 0)
+        }
+
+        // Icone de voltar
         btnBack?.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> v.animate().alpha(0.7f).scaleX(0.9f).scaleY(0.9f).setDuration(80).start()
@@ -45,7 +69,7 @@ class LoginActivity : AppCompatActivity() {
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
 
-        // ⚡ Efeito no botão Login
+        // Efeito no botao Login
         btnLogin.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> v.animate().scaleX(0.96f).scaleY(0.96f).setDuration(80).start()
@@ -57,7 +81,7 @@ class LoginActivity : AppCompatActivity() {
             false
         }
 
-        // 🚀 Ação de login
+        // Acao de login
         btnLogin.setOnClickListener {
             val email = edtEmail.text.toString()
             val password = edtPassword.text.toString()
@@ -82,7 +106,7 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        // 💫 "Esqueci a senha"
+        // Link "Esqueci a senha"
         txtForgotPassword.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> v.animate().alpha(0.85f).scaleX(0.98f).scaleY(0.98f).setDuration(80).start()
@@ -100,7 +124,7 @@ class LoginActivity : AppCompatActivity() {
             finish()
         }
 
-        // 💫 "Criar conta"
+        // Link "Criar conta"
         txtRegister.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> v.animate().alpha(0.85f).scaleX(0.98f).scaleY(0.98f).setDuration(80).start()

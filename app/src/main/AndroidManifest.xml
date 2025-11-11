@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.CAMERA" /> <!-- ATENÇÃO: Verifique se android.permission.RECORD_AUDIO é realmente necessário. -->
     <!-- Se for apenas para REPRODUZIR sons de alerta, esta permissão NÃO é geralmente necessária. -->
     <!-- Mantenha apenas se seu app precisa GRAVAR áudio. -->
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    
 
     <uses-feature
         android:name="android.hardware.camera.front"

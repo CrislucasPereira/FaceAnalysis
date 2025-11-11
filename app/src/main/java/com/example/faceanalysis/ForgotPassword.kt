@@ -9,6 +9,10 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 
+/**
+ * Fluxo de recuperacao de senha por e-mail (Firebase Auth).
+ * Envia link de redefinicao e retorna ao login apos sucesso.
+ */
 class ForgotPasswordActivity : AppCompatActivity() {
 
     private val TAG = "ForgotPasswordActivity"
@@ -25,7 +29,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
         val btnSendReset = findViewById<Button>(R.id.btnSendReset)
         val txtBackToLogin = findViewById<TextView>(R.id.txtBackToLogin)
 
-        // Efeito no botão
+        // Efeito no botao
         btnSendReset.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> v.animate().scaleX(0.96f).scaleY(0.96f).setDuration(80).start()
@@ -44,7 +48,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
                             Log.d(TAG, "Email enviado para $email")
-                            Toast.makeText(this, "Link de redefinição enviado!", Toast.LENGTH_LONG).show()
+                            Toast.makeText(this, "Link de redefinicao enviado!", Toast.LENGTH_LONG).show()
                             startActivity(Intent(this, LoginActivity::class.java))
                             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                             finish()
@@ -58,7 +62,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
             }
         }
 
-        // Efeito e ação do texto “Voltar ao login”
+        // Efeito e acao do texto "Voltar ao login"
         txtBackToLogin.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> v.animate().alpha(0.85f).scaleX(0.98f).scaleY(0.98f).setDuration(80).start()
@@ -77,3 +81,4 @@ class ForgotPasswordActivity : AppCompatActivity() {
         }
     }
 }
+

@@ -1,4 +1,4 @@
-<resources>
+﻿<resources>
     <string name="app_name">DriveON</string>
     <string name="drive">Drive</string>
     <string name="on">On</string>
@@ -6,4 +6,105 @@
         Concordo com os <b><u>Termos de Uso</u></b> e Política de Privacidade.
     </string>
     <string name="fechar">Fechar</string>
-</resources>
+    <!-- Common -->
+    <string name="back_to_login">Voltar ao login</string>
+    <string name="enter">Entrar</string>
+    <string name="welcome">Bem-vindo(a)!</string>
+    <string name="loading_email">carregando e-mail...</string>
+    <string name="start_analysis">Iniciar Análise</string>
+    <string name="view_profile">Ver Perfil</string>
+    <string name="daily_report">Relatório Diário</string>
+    <string name="logout">Sair da Conta</string>
+    <string name="history">Histórico</string>
+    <string name="settings">Configurações</string>
+    <string name="exit">Sair</string>
+
+    <!-- Home -->
+    <string name="home_tagline">Segurança em cada viagem</string>
+
+    <!-- Toolbar / Analysis -->
+    <string name="analysis_title">Análise Facial</string>
+    <string name="status_starting">Status: Iniciando...</string>
+    <string name="waiting_face_detection">Aguardando detecção facial...</string>
+    <string name="counters_initial">Microsleep: 0.0s / 2.0s
+Bocejos: 0 / 4</string>
+    <string name="camera_permission_denied">Permissão de câmera negada</string>
+    <string name="camera_permission_required">Permissão de câmera é necessária.</string>
+    <string name="returning_to_analysis">Voltando à análise...</string>
+    <string name="sensitivity_changed">Sensibilidade ajustada para: %1$s</string>
+
+    <!-- Forgot password -->
+    <string name="forgot_title">Recuperar senha</string>
+    <string name="forgot_subtitle">Digite seu e-mail para receber o link de redefinição.</string>
+    <string name="send_link">Enviar link</string>
+
+    <!-- History -->
+    <string name="history_title">Veja seus registros de análise</string>
+
+    <!-- Login -->
+    <string name="login">Login</string>
+    <string name="forgot_password">Esqueci a senha</string>
+    <string name="create_account">Criar conta</string>
+    <string name="fill_email_password">Preencha e-mail e senha!</string>
+    <string name="login_success">Login realizado com sucesso!</string>
+    <string name="login_failure">Falha no login: %1$s</string>
+    <string name="enter_email">Digite seu e-mail</string>
+    <string name="enter_password">Digite sua senha</string>
+
+    <!-- Main -->
+    <string name="signed_out">Você saiu da conta.</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Perfil do Usuário</string>
+    <string name="profile_email_label">E-mail:</string>
+    <string name="profile_uid_label">UID:</string>
+    <string name="profile_email_format">E-mail: %1$s</string>
+    <string name="profile_uid_format">UID: %1$s</string>
+    <string name="account_status">Status da Conta</string>
+    <string name="email_verified">E-mail verificado</string>
+    <string name="email_not_verified">E-mail ainda não verificado</string>
+    <string name="back_to_home">Voltar ao Início</string>
+
+    <!-- Register -->
+    <string name="register_title">Criar conta</string>
+    <string name="name_full">Nome completo</string>
+    <string name="email">E-mail</string>
+    <string name="password">Senha</string>
+    <string name="password_requirements_full">A senha deve conter: mínimo 8 caracteres, letra maiúscula, minúscula, número e símbolo.</string>
+    <string name="accept_notifications_optional">Aceito receber avisos e comunicados (opcional).</string>
+    <string name="register">Cadastrar</string>
+    <string name="have_account_login">Já possui conta? Faça login</string>
+    <string name="fill_all_fields">Preencha todos os campos!</string>
+    <string name="accept_terms">Aceite os Termos de Uso e Política de Privacidade.</string>
+    <string name="weak_password_hint">Senha fraca! Use letra maiúscula, minúscula, número e símbolo.</string>
+    <string name="signup_success">Cadastro realizado com sucesso!</string>
+    <string name="generic_failure">Falha: %1$s</string>
+    <string name="error_prefix">Erro: %1$s</string>
+    <string name="password_strong">✔️ Senha forte</string>
+    <string name="password_medium">⚠️ Senha média</string>
+    <string name="password_weak">⚠️ Senha fraca</string>
+    <string name="password_very_weak">❌ Senha muito fraca</string>
+
+    <!-- Menus / Bottom sheet -->
+    <string name="menu_more_options">Mais opções</string>
+    <string name="bottom_history">Histórico</string>
+    <string name="bottom_settings">Configurações</string>
+    <string name="bottom_exit">Sair</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_analysis_settings_title">Configurações de Análise</string>
+    <string name="dialog_show_landmarks">Exibir pontos faciais</string>
+    <string name="dialog_show_landmarks_desc">Mostra ou oculta os landmarks durante a análise.</string>
+    <string name="dialog_detection_sensitivity">Sensibilidade de Detecção</string>
+    <string name="sleep_warning_title">SINAIS DE SONO DETECTADOS
+
+Pare o veículo com segurança e descanse!</string>
+    <string name="ok_understood">ENTENDIDO</string>
+
+    <!-- Analysis counters -->
+    <string name="microsleep">Microsleep</string>
+    <string name="occurrences">Ocorrências: %1$d</string>
+    <string name="avg_duration">Duração média: %1$ds</string>
+    <string name="first_last">Primeiro: %1$s / Último: %2$s</string>
+    <string name="no_chart_data">Sem dados disponíveis</string></resources>
+

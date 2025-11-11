@@ -83,6 +83,7 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
 
+
     // --- Outras dependências úteis ---
     implementation(libs.genai.common)
     implementation("androidx.core:core-ktx:1.10.1")
