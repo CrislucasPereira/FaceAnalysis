@@ -1,4 +1,4 @@
-package com.example.faceanalysis
+﻿package com.example.faceanalysis
 
 import android.content.Context
 import android.media.MediaPlayer
@@ -66,7 +66,7 @@ class AlertManager(private val context: Context) {
         }
     }
 
-    // Removido: alerta de desatenção
+    // Alerta de desatenção descontinuado
 
     // BOCEJO: toca bipes ate o usuario clicar em OK
     fun startBocejoLoop() {
@@ -111,3 +111,4 @@ class AlertManager(private val context: Context) {
         }
     }
 }
+

@@ -1,4 +1,4 @@
-package com.example.faceanalysis
+﻿package com.example.faceanalysis
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
@@ -190,7 +190,7 @@ class ReportActivity : AppCompatActivity() {
                         status.contains("Microsleep", true) -> Color.parseColor("#E53935")
                         status.contains("Bocejo", true) -> Color.parseColor("#FFB300")
                         status.contains("Atento", true) -> Color.parseColor("#43A047")
-                        // Removido: mapeamento de cor para Desatenção
+                        // Sem mapeamento de cor para estados descontinuados
                         status.contains("Sem Rosto", true) -> Color.parseColor("#9E9E9E")
                         status.contains("Sinais", true) -> Color.parseColor("#FB8C00")
                         else -> ColorTemplate.MATERIAL_COLORS[i % ColorTemplate.MATERIAL_COLORS.size]
@@ -422,3 +422,4 @@ class ReportActivity : AppCompatActivity() {
         listenerRegistration?.remove()
     }
 }
+

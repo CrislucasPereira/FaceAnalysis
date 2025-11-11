@@ -1,4 +1,4 @@
-package com.example.faceanalysis
+﻿package com.example.faceanalysis
 
 import android.Manifest
 import android.content.Intent
@@ -33,21 +33,20 @@ import kotlin.math.*
 
 
 /**
- * Tela principal de anolise facial em tempo real.
+ * Tela principal de analise facial em tempo real.
  *
  * Fluxo principal:
- * - Inicializa MediaPipe FaceLandmarker e c?mera (CameraX).
- * - Converte frames para Bitmap e executa detec??uo/landmarks.
+ * - Inicializa MediaPipe FaceLandmarker e câmera (CameraX).
+ * - Converte frames para Bitmap e executa detecção/landmarks.
  * - Extrai features e classifica estados com modelo ONNX (microsleep, bocejo, etc.).
  * - Atualiza UI/overlay e dispara alertas sonoros conforme regras.
- * - Persiste eventos relevantes no Firestore (com timestamps e m?tricas).
+ * - Persiste eventos relevantes no Firestore (com timestamps e métricas).
  */
 class AnalysisActivity : AppCompatActivity() {
 
     private lateinit var alertManager: AlertManager
 
-    // Removido: flags antigas nao utilizadas (showLandmarks, sensitivityLevel)
-    private lateinit var previewView: PreviewView
+        private lateinit var previewView: PreviewView
     private lateinit var tvResult: TextView
     private lateinit var tvAdditionalInfo: TextView
     private lateinit var tvCounters: TextView
@@ -95,8 +94,7 @@ class AnalysisActivity : AppCompatActivity() {
 
     //Contadores visuais (milissegundos)
     private var microsleepMillis = 0L
-    // Removido: contadores de desatenção (yaw)
-
+    
     //Landmarks e Índices
     private val SELECTED_LANDMARKS = listOf(
         61, 40, 37, 0, 267, 270, 291,
@@ -114,8 +112,7 @@ class AnalysisActivity : AppCompatActivity() {
     private var currentFace: List<com.google.mediapipe.tasks.components.containers.NormalizedLandmark>? = null
 
     private var attentionRecoveryStartTime: Long = 0L
-    // Removido: tempos de recuperação para desatenção
-
+    
 
     companion object {
         private const val TAG = "AnalysisActivity"
@@ -251,8 +248,8 @@ class AnalysisActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
             if (granted) { setupFaceLandmarker(); startCamera() }
             else {
-                tvResult.text = "Permissuo de c?mera negada"
-                Toast.makeText(this, "Permissuo de c?mera ? necessoria.", Toast.LENGTH_LONG).show()
+                tvResult.text = "Permissuo de câmera negada"
+                Toast.makeText(this, "Permissuo de câmera ? necessoria.", Toast.LENGTH_LONG).show()
                 finish()
             }
         }
@@ -335,7 +332,7 @@ class AnalysisActivity : AppCompatActivity() {
                             }
                         }
 
-                        // reset de estados de anolise
+                        // reset de estados de analise
                         inMicrosleep = false
                         eyesClosedStartTime = 0L
                         microsleepMillis = 0L
@@ -410,7 +407,7 @@ class AnalysisActivity : AppCompatActivity() {
             tvResult.text = "Status: $label"
             tvAdditionalInfo.text = when (label) {
                 "Microsleep detectado" -> { tvAdditionalInfo.setTextColor(Color.RED); "Microsleep detectado!" }
-                // Removido: mensagem de Desatenção
+                
                 "Bocejo detectado"     -> { tvAdditionalInfo.setTextColor(Color.CYAN); "Bocejo detectado!" }
                 "Atento"               -> { tvAdditionalInfo.setTextColor(Color.GREEN); "Atenção normal" }
                 else                   -> { tvAdditionalInfo.setTextColor(Color.LTGRAY); label }
@@ -610,12 +607,12 @@ class AnalysisActivity : AppCompatActivity() {
 
         when (newLabel) {
             "Microsleep" -> alertManager.playMicrosleep()
-            // Removido: alerta de Desatenção
+            
             "Bocejo" -> alertManager.startBocejoLoop()
             "Sem Rosto" -> alertManager.playSemRosto()
             "Atento", "Alerta" -> {
                 alertManager.stopMicrosleep()
-                // Removido: parada de alerta de Desatenção
+                
                 alertManager.stopBocejoLoop()
             }
         }
@@ -647,7 +644,7 @@ class AnalysisActivity : AppCompatActivity() {
                 dialog.dismiss()
                 yawnCount = 0
                 handleEventTransition("Alerta")
-                Toast.makeText(this, "Voltando ?? anolise...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Voltando ?? analise...", Toast.LENGTH_SHORT).show()
             }
 
             dialog.show()
@@ -749,7 +746,7 @@ class AnalysisActivity : AppCompatActivity() {
             cameraProvider.bindToLifecycle(
                 this, CameraSelector.DEFAULT_FRONT_CAMERA, preview, imageAnalysis
             )
-            Log.i(TAG, "C?mera iniciada com sucesso")
+            Log.i(TAG, "câmera iniciada com sucesso")
         }, ContextCompat.getMainExecutor(this))
     }
 
@@ -816,7 +813,7 @@ class AnalysisActivity : AppCompatActivity() {
             faceLandmarker?.close()
             faceLandmarker = null
             setupFaceLandmarker()
-            Log.w(TAG, "FaceLandmarker reiniciado ap??s falha")
+            Log.w(TAG, "FaceLandmarker reiniciado após falha")
         } catch (e: Exception) {
             Log.e(TAG, "Erro ao reiniciar Landmarker: ${e.message}")
         }
@@ -830,7 +827,7 @@ class AnalysisActivity : AppCompatActivity() {
             }
             startCamera()
         } catch (e: Exception) {
-            Log.e(TAG, "Erro ao retomar c?mera: ${e.message}")
+            Log.e(TAG, "Erro ao retomar câmera: ${e.message}")
         }
     }
 
@@ -846,3 +843,4 @@ class AnalysisActivity : AppCompatActivity() {
 
 
 }
+
