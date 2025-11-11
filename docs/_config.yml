@@ -1,3 +1,4 @@
 theme: jekyll-theme-cayman
 title: DriveON – Face Analysis (Android)
 description: Detecção de fadiga em tempo real (CameraX + MediaPipe + ONNX + Firebase)
+show_downloads: false

@@ -1,0 +1,17 @@
+:root{
+  --accent:#3DDC84;
+  --text:#1b1f23;
+}
+.hero{ text-align:center; margin: 24px auto 32px; }
+.hero h1{ font-size:42px; margin:0 0 8px; }
+.hero .subtitle{ font-size:18px; color:#555; margin:0 0 16px; }
+.hero .badges img{ margin:4px; vertical-align:middle; }
+.cta{ margin-top:14px; }
+.btn{ display:inline-block; padding:10px 16px; margin:6px; border-radius:8px; border:1px solid #d0d7de; text-decoration:none; color:#24292f; background:#fff; }
+.btn.primary{ background:var(--accent); color:#fff; border-color:var(--accent); }
+
+.grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:12px; margin:16px 0 24px; }
+.card{ border:1px solid #d0d7de; border-radius:12px; padding:14px 16px; background:#fff; }
+
+/* Improve code blocks readability */
+pre, code{ font-size: 14px; }
