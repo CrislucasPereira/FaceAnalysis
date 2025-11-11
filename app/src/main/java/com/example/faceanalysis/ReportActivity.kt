@@ -50,10 +50,23 @@ class ReportActivity : AppCompatActivity() {
         btnSelectDate = findViewById(R.id.btnSelectDate)
         spinnerChartType = findViewById(R.id.spinnerChartType)
 
+        // Mensagem quando não houver dados para exibir nos gráficos
+        val noDataMsg = getString(R.string.no_chart_data)
+        val noDataColor = Color.parseColor("#FFB300")
+        pieChart.setNoDataText(noDataMsg); pieChart.setNoDataTextColor(noDataColor)
+        barChart.setNoDataText(noDataMsg); barChart.setNoDataTextColor(noDataColor)
+        radarChart.setNoDataText(noDataMsg); radarChart.setNoDataTextColor(noDataColor)
+
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
+        try {
+            val settings = com.google.firebase.firestore.FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build()
+            db.firestoreSettings = settings
+        } catch (_: Exception) { }
 
-        // 🎨 Spinner com texto escuro e visual consistente
+        //Spinner com texto escuro e visual consistente
         val chartTypes = listOf("Pizza", "Barras", "Radar")
         val adapter = ArrayAdapter(this, R.layout.spinner_item, chartTypes)
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
@@ -67,7 +80,7 @@ class ReportActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        // 💫 Efeito de clique suave
+        //Efeito de clique suave
         btnSelectDate.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> v.animate().scaleX(0.96f).scaleY(0.96f).setDuration(80).start()
@@ -117,10 +130,16 @@ class ReportActivity : AppCompatActivity() {
             .whereGreaterThanOrEqualTo("startTime", startOfDay)
             .whereLessThan("startTime", endOfDay)
             .addSnapshotListener { snapshot, error ->
-                if (error != null || snapshot == null) return@addSnapshotListener
+                if (error != null || snapshot == null) {
+                    Log.e("Report", "Erro carregando eventos: ${error?.message}", error)
+                    Toast.makeText(this, "Erro ao carregar eventos", Toast.LENGTH_SHORT).show()
+                    return@addSnapshotListener
+                }
                 if (snapshot.isEmpty) {
                     findViewById<LinearLayout>(R.id.containerSummary).removeAllViews()
                     pieChart.clear(); barChart.clear(); radarChart.clear()
+                    // força redesenho para exibir a mensagem "Sem dados disponíveis"
+                    pieChart.invalidate(); barChart.invalidate(); radarChart.invalidate()
                     return@addSnapshotListener
                 }
 
@@ -130,7 +149,7 @@ class ReportActivity : AppCompatActivity() {
     }
 
     private fun displayCharts(events: List<Map<String, Any>>, date: Date) {
-        // 🔁 Unifica "Alerta" e "Atento"
+        //Unifica "Alerta" e "Atento"
         val normalizedEvents = events.map { event ->
             val status = event["status"].toString()
             val unifiedStatus = when (status.lowercase()) {
@@ -140,8 +159,20 @@ class ReportActivity : AppCompatActivity() {
             event.toMutableMap().apply { this["status"] = unifiedStatus }
         }
 
-        val grouped = normalizedEvents.groupBy { it["status"].toString() }
-        val summary = grouped.mapValues { it.value.sumOf { e -> (e["duration"] as? Long) ?: 0L } }
+        // Remove eventos de Desatenção dos relatórios
+        val filtered = normalizedEvents.filter { !it["status"].toString().contains("Desatenção", true) }
+        val grouped = filtered.groupBy { it["status"].toString() }
+        // Lida com números salvos como Long, Int ou Double no Firestore
+        val summary = grouped.mapValues { group ->
+            group.value.sumOf { e ->
+                val n = e["duration"]
+                when (n) {
+                    is Number -> n.toLong()
+                    is String -> n.toLongOrNull() ?: 0L
+                    else -> 0L
+                }
+            }
+        }
 
         val pieEntries = ArrayList<PieEntry>()
         val barEntries = ArrayList<BarEntry>()
@@ -159,7 +190,7 @@ class ReportActivity : AppCompatActivity() {
                         status.contains("Microsleep", true) -> Color.parseColor("#E53935")
                         status.contains("Bocejo", true) -> Color.parseColor("#FFB300")
                         status.contains("Atento", true) -> Color.parseColor("#43A047")
-                        status.contains("Desatenção", true) -> Color.parseColor("#1E88E5")
+                        // Removido: mapeamento de cor para Desatenção
                         status.contains("Sem Rosto", true) -> Color.parseColor("#9E9E9E")
                         status.contains("Sinais", true) -> Color.parseColor("#FB8C00")
                         else -> ColorTemplate.MATERIAL_COLORS[i % ColorTemplate.MATERIAL_COLORS.size]
@@ -172,7 +203,7 @@ class ReportActivity : AppCompatActivity() {
         setupPieChart(pieEntries, colors)
         setupBarChart(barEntries, statuses, colors)
         setupRadarChart(summary)
-        setupInteractiveSummary(normalizedEvents, summary)
+        setupInteractiveSummary(filtered, summary)
         updateChartVisibility()
     }
 
@@ -183,7 +214,7 @@ class ReportActivity : AppCompatActivity() {
         ds.valueTextColor = Color.BLACK
         ds.valueTextSize = 13f
 
-        // 🧠 Rótulos externos com linhas conectando as fatias
+        //Rótulos externos com linhas conectando as fatias
         ds.yValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
         ds.xValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
         ds.valueLinePart1OffsetPercentage = 85f
@@ -191,35 +222,51 @@ class ReportActivity : AppCompatActivity() {
         ds.valueLinePart2Length = 0.5f
         ds.valueLineColor = Color.DKGRAY
 
-        // 💅 Dados de exibição
+        //Dados de exibição
         val data = PieData(ds)
         pieChart.data = data
         pieChart.setUsePercentValues(true)
         pieChart.setDrawEntryLabels(false) // oculta rótulos internos
         pieChart.isDrawHoleEnabled = true
 
-        // 🍩 Estilo doughnut premium
+        // Estilo doughnut premium
         pieChart.holeRadius = 60f
         pieChart.transparentCircleRadius = 65f
         pieChart.setHoleColor(Color.parseColor("#FAFAFA"))
 
-        // 🧭 Texto central dinâmico
+        // Legenda: evitar sobreposição e permitir quebra de linha
+        val legend = pieChart.legend
+        legend.textColor = Color.DKGRAY
+        legend.textSize = 12f
+        legend.formSize = 12f
+        legend.form = com.github.mikephil.charting.components.Legend.LegendForm.SQUARE
+        legend.horizontalAlignment = com.github.mikephil.charting.components.Legend.LegendHorizontalAlignment.CENTER
+        legend.verticalAlignment = com.github.mikephil.charting.components.Legend.LegendVerticalAlignment.BOTTOM
+        legend.orientation = com.github.mikephil.charting.components.Legend.LegendOrientation.HORIZONTAL
+        legend.isWordWrapEnabled = true
+        legend.xEntrySpace = 12f
+        legend.yEntrySpace = 8f
+        legend.formToTextSpace = 6f
+        legend.setDrawInside(false)
+        pieChart.extraBottomOffset = 14f
+
+        // Texto central dinâmico
         val totalMinutes = entries.sumOf { it.value.toDouble() }
         pieChart.centerText = "Total Analisado\n${"%.1f".format(totalMinutes)} min"
         pieChart.setCenterTextSize(15f)
         pieChart.setCenterTextColor(Color.parseColor("#1C1C1E"))
         pieChart.setCenterTextTypeface(resources.getFont(R.font.poppins_semibold))
 
-        // 🎨 Legenda e aparência geral
+        // Legenda e aparência geral
         pieChart.legend.textColor = Color.DKGRAY
         pieChart.legend.textSize = 13f
         pieChart.legend.isWordWrapEnabled = true
         pieChart.description.isEnabled = false
 
-        // ✨ Animação suave
+        // Animação suave
         pieChart.animateXY(1000, 1000)
 
-        // 🔄 Atualiza o gráfico
+        // Atualiza o gráfico
         pieChart.invalidate()
     }
 
@@ -240,7 +287,7 @@ class ReportActivity : AppCompatActivity() {
         data.barWidth = 0.7f
         barChart.data = data
 
-        // 🧭 Configuração dos eixos
+        // Configuração dos eixos
         val xAxis = barChart.xAxis
         xAxis.valueFormatter = com.github.mikephil.charting.formatter.IndexAxisValueFormatter(labels)
         xAxis.position = com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM
@@ -258,10 +305,18 @@ class ReportActivity : AppCompatActivity() {
 
         barChart.axisRight.isEnabled = false
 
-        // 💅 Aparência geral
+        // Aparência geral
         barChart.description.isEnabled = false
-        barChart.legend.textColor = Color.DKGRAY
-        barChart.legend.textSize = 13f
+        barChart.legend.apply {
+            textColor = Color.DKGRAY
+            textSize = 13f
+            isWordWrapEnabled = true
+            horizontalAlignment = com.github.mikephil.charting.components.Legend.LegendHorizontalAlignment.CENTER
+            verticalAlignment = com.github.mikephil.charting.components.Legend.LegendVerticalAlignment.BOTTOM
+            orientation = com.github.mikephil.charting.components.Legend.LegendOrientation.HORIZONTAL
+            xEntrySpace = 12f; yEntrySpace = 8f; formToTextSpace = 6f
+            setDrawInside(false)
+        }
         barChart.setFitBars(true)
         barChart.setScaleEnabled(false)
         barChart.setPinchZoom(false)
@@ -269,10 +324,10 @@ class ReportActivity : AppCompatActivity() {
         barChart.extraBottomOffset = 10f
         barChart.extraTopOffset = 10f
 
-        // ✨ Animação suave
+        // Animação suave
         barChart.animateY(1000)
 
-        // 🔄 Atualiza o gráfico
+        // Atualiza o gráfico
         barChart.invalidate()
     }
 
@@ -290,7 +345,16 @@ class ReportActivity : AppCompatActivity() {
         radarChart.xAxis.valueFormatter =
             com.github.mikephil.charting.formatter.IndexAxisValueFormatter(summary.keys.toList())
         radarChart.yAxis.setDrawLabels(false)
-        radarChart.legend.textColor = Color.DKGRAY
+        radarChart.legend.apply {
+            textColor = Color.DKGRAY
+            textSize = 12f
+            isWordWrapEnabled = true
+            horizontalAlignment = com.github.mikephil.charting.components.Legend.LegendHorizontalAlignment.CENTER
+            verticalAlignment = com.github.mikephil.charting.components.Legend.LegendVerticalAlignment.BOTTOM
+            orientation = com.github.mikephil.charting.components.Legend.LegendOrientation.HORIZONTAL
+            xEntrySpace = 12f; yEntrySpace = 8f; formToTextSpace = 6f
+            setDrawInside(false)
+        }
         radarChart.description.text = ""
         radarChart.animateXY(900, 900)
         radarChart.invalidate()
@@ -317,7 +381,8 @@ class ReportActivity : AppCompatActivity() {
         val format = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
 
         summary.forEach { (status, durationMs) ->
-            val view = inflater.inflate(R.layout.item_status_card, null)
+            // Inflate com o parent para que as LayoutParams (margens) sejam respeitadas
+            val view = inflater.inflate(R.layout.item_status_card, container, false)
             val tvName = view.findViewById<TextView>(R.id.tvStatusName)
             val tvTime = view.findViewById<TextView>(R.id.tvTotalTime)
             val tvOcc = view.findViewById<TextView>(R.id.tvOccurrences)

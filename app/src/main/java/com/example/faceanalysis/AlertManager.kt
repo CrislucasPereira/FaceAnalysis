@@ -5,19 +5,24 @@ import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import com.example.faceanalysis.R
 
+/**
+ * Gerencia a reproducao de alertas sonoros da aplicacao.
+ *
+ * Responsabilidades:
+ * - Carregar e liberar recursos de audio em res/raw.
+ * - Tocar alarmes continuos (microsleep) e bipes em laco (bocejo/desatencao).
+ * - Evitar sobreposicao de sons e vazamentos de recursos.
+ */
 class AlertManager(private val context: Context) {
 
     private var mpMicrosleep: MediaPlayer? = null
     private var mpBocejo: MediaPlayer? = null
-    private var mpDesatencao: MediaPlayer? = null
     private var mpSemRosto: MediaPlayer? = null
 
     private val handler = Handler(Looper.getMainLooper())
 
     private var isMicrosleepPlaying = false
-    private var isDesattentionActive = false
     private var isBocejoPlaying = false
 
     companion object {
@@ -27,16 +32,15 @@ class AlertManager(private val context: Context) {
     init {
         try {
             // Sons curtos (bipes) e longos devem estar em /res/raw/
-            mpMicrosleep = MediaPlayer.create(context, R.raw.alerta_microsleep) // som contínuo
-            mpBocejo = MediaPlayer.create(context, R.raw.alerta_bocejo)         // som curto de bip
-            mpDesatencao = MediaPlayer.create(context, R.raw.alerta_bip)        // som simples de bip
-            mpSemRosto = MediaPlayer.create(context, R.raw.alerta_falta_rosto)  // bip duplo ou diferente
+            mpMicrosleep = MediaPlayer.create(context, R.raw.alerta_microsleep)
+            mpBocejo = MediaPlayer.create(context, R.raw.alerta_bocejo)
+            mpSemRosto = MediaPlayer.create(context, R.raw.alerta_falta_rosto)
         } catch (e: Exception) {
             Log.e(TAG, "Erro carregando sons: ${e.message}")
         }
     }
 
-    // --- MICROSLEEP: toca contínuo até parar ---
+    // MICROSLEEP: toca continuo ate parar
     fun playMicrosleep() {
         if (isMicrosleepPlaying) return
         try {
@@ -44,7 +48,7 @@ class AlertManager(private val context: Context) {
             mpMicrosleep?.isLooping = true
             mpMicrosleep?.setVolume(1f, 1f)
             mpMicrosleep?.start()
-            Log.d(TAG, "🔊 Som Microsleep contínuo iniciado")
+            Log.d(TAG, "Som Microsleep continuo iniciado")
         } catch (e: Exception) {
             Log.e(TAG, "Erro iniciando som Microsleep: ${e.message}")
         }
@@ -56,42 +60,15 @@ class AlertManager(private val context: Context) {
             mpMicrosleep?.pause()
             mpMicrosleep?.seekTo(0)
             isMicrosleepPlaying = false
-            Log.d(TAG, "🔇 Som Microsleep parado")
+            Log.d(TAG, "Som Microsleep parado")
         } catch (e: Exception) {
             Log.e(TAG, "Erro parando som Microsleep: ${e.message}")
         }
     }
 
-    // --- DESATENÇÃO: 3 bipes -> pausa -> repete enquanto ativo ---
-    fun startDesattentionLoop() {
-        if (isDesattentionActive) return
-        isDesattentionActive = true
-        loopDesattention()
-    }
+    // Removido: alerta de desatenção
 
-    private fun loopDesattention() {
-        if (!isDesattentionActive) return
-
-        // toca 3 bipes seguidos
-        repeat(3) { i ->
-            handler.postDelayed({
-                mpDesatencao?.seekTo(0)
-                mpDesatencao?.start()
-            }, (i * 400).toLong()) // intervalo entre bipes
-        }
-
-        // repete após 2s + tempo dos 3 bipes (~3.2s total)
-        handler.postDelayed({
-            loopDesattention()
-        }, 3200)
-    }
-
-    fun stopDesattentionLoop() {
-        isDesattentionActive = false
-        handler.removeCallbacksAndMessages(null)
-    }
-
-    // --- BOCEJO: toca bipes até o usuário clicar em OK ---
+    // BOCEJO: toca bipes ate o usuario clicar em OK
     fun startBocejoLoop() {
         if (isBocejoPlaying) return
         isBocejoPlaying = true
@@ -102,7 +79,7 @@ class AlertManager(private val context: Context) {
         if (!isBocejoPlaying) return
         mpBocejo?.seekTo(0)
         mpBocejo?.start()
-        handler.postDelayed({ loopBocejo() }, 600) // 600 ms entre bipes
+        handler.postDelayed({ loopBocejo() }, 600)
     }
 
     fun stopBocejoLoop() {
@@ -110,26 +87,24 @@ class AlertManager(private val context: Context) {
         handler.removeCallbacksAndMessages(null)
     }
 
-    // --- SEM ROSTO: apenas uma vez ---
+    // SEM ROSTO: apenas uma vez
     fun playSemRosto() {
         try {
             mpSemRosto?.seekTo(0)
             mpSemRosto?.start()
-            Log.d(TAG, "🔊 Som 'Sem Rosto' tocado")
+            Log.d(TAG, "Som 'Sem Rosto' tocado")
         } catch (e: Exception) {
             Log.e(TAG, "Erro tocando som Sem Rosto: ${e.message}")
         }
     }
 
-    // --- Libera tudo ---
+    // Libera recursos
     fun release() {
         try {
             stopMicrosleep()
             stopBocejoLoop()
-            stopDesattentionLoop()
             mpMicrosleep?.release()
             mpBocejo?.release()
-            mpDesatencao?.release()
             mpSemRosto?.release()
         } catch (e: Exception) {
             Log.e(TAG, "Erro ao liberar sons: ${e.message}")

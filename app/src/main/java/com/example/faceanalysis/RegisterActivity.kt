@@ -11,9 +11,17 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.MotionEvent
 import android.widget.*
+import android.text.method.PasswordTransformationMethod
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 
+/**
+ * Fluxo de cadastro de usuarios (Firebase Auth).
+ *
+ * - Validacoes de senha e aceite de termos.
+ * - Feedback de forca da senha (texto + barra).
+ * - Encaminha para login apos cadastro.
+ */
 class RegisterActivity : AppCompatActivity() {
 
     private val TAG = "RegisterActivity"
@@ -29,6 +37,21 @@ class RegisterActivity : AppCompatActivity() {
         val edtName = findViewById<EditText>(R.id.edtName)
         val edtEmail = findViewById<EditText>(R.id.edtEmail)
         val edtPassword = findViewById<EditText>(R.id.edtPassword)
+        val btnToggle = findViewById<ImageButton>(R.id.btnTogglePasswordRegister)
+        // Força sempre oculto por padrão
+        edtPassword.transformationMethod = PasswordTransformationMethod.getInstance()
+        var showing = false
+        btnToggle?.setOnClickListener {
+            showing = !showing
+            if (showing) {
+                edtPassword.transformationMethod = null
+                btnToggle.setImageResource(R.drawable.ic_visibility)
+            } else {
+                edtPassword.transformationMethod = PasswordTransformationMethod.getInstance()
+                btnToggle.setImageResource(R.drawable.ic_visibility_off)
+            }
+            edtPassword.setSelection(edtPassword.text?.length ?: 0)
+        }
         val tvPasswordStrength = findViewById<TextView>(R.id.tvPasswordStrength)
         val progressPasswordStrength = findViewById<ProgressBar>(R.id.progressPasswordStrength)
         val btnRegister = findViewById<Button>(R.id.btnRegister)
@@ -37,9 +60,9 @@ class RegisterActivity : AppCompatActivity() {
         val switchNotify = findViewById<Switch>(R.id.switchNotify)
         val tvTerms = findViewById<TextView>(R.id.tvTerms)
 
-        // 🌐 "Termos de Uso"
+        // Termos de uso
         tvTerms.text = Html.fromHtml(
-            "Concordo com os <b><u>Termos de Uso</u></b> e Política de Privacidade.",
+            "Concordo com os <b><u>Termos de Uso</u></b> e Politica de Privacidade.",
             Html.FROM_HTML_MODE_LEGACY
         )
 
@@ -75,7 +98,7 @@ class RegisterActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        // Botão Cadastrar
+        // Botao Cadastrar
         btnRegister.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> v.animate().scaleX(0.96f).scaleY(0.96f).setDuration(80).start()
@@ -98,12 +121,12 @@ class RegisterActivity : AppCompatActivity() {
             }
 
             if (!switchTerms.isChecked) {
-                Toast.makeText(this, "Aceite os Termos de Uso e Política de Privacidade.", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Aceite os Termos de Uso e Politica de Privacidade.", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
 
             if (!isPasswordValid(password)) {
-                Toast.makeText(this, "Senha fraca! Use letra maiúscula, minúscula, número e símbolo.", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Senha fraca! Use letra maiuscula, minuscula, numero e simbolo.", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
 
@@ -150,7 +173,7 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun getPasswordFeedback(password: String): PasswordFeedback {
-        if (password.isEmpty()) return PasswordFeedback("A senha deve conter: mínimo 8 caracteres, letra maiúscula, minúscula, número e símbolo.", "#B71C1C", 0)
+        if (password.isEmpty()) return PasswordFeedback("A senha deve conter: minimo 8 caracteres, letra maiuscula, minuscula, numero e simbolo.", "#B71C1C", 0)
         var score = 0
         if (password.length >= 8) score++
         if (password.any { it.isUpperCase() }) score++
@@ -158,10 +181,10 @@ class RegisterActivity : AppCompatActivity() {
         if (password.any { it.isDigit() }) score++
         if (password.any { !it.isLetterOrDigit() }) score++
         return when (score) {
-            5 -> PasswordFeedback("✅ Senha forte", "#2E7D32", 5)
-            4 -> PasswordFeedback("🟡 Senha média", "#F9A825", 4)
-            3 -> PasswordFeedback("🟠 Senha fraca", "#FB8C00", 3)
-            else -> PasswordFeedback("❌ Senha muito fraca", "#B71C1C", 1)
+            5 -> PasswordFeedback("Senha forte", "#2E7D32", 5)
+            4 -> PasswordFeedback("Senha media", "#F9A825", 4)
+            3 -> PasswordFeedback("Senha fraca", "#FB8C00", 3)
+            else -> PasswordFeedback("Senha muito fraca", "#B71C1C", 1)
         }
     }
 

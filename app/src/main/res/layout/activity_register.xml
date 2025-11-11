@@ -61,19 +61,36 @@
             android:textColorHint="#9C9C9C"
             android:layout_marginBottom="16dp" />
 
-        <!-- Campo Senha -->
-        <EditText
-            android:id="@+id/edtPassword"
+        <!-- Campo Senha com toggle -->
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:hint="Senha"
-            android:inputType="textPassword"
-            android:background="@drawable/field_bg"
-            android:backgroundTint="@null"
-            android:paddingHorizontal="16dp"
-            android:textColor="#222222"
-            android:textColorHint="#9C9C9C"
-            android:layout_marginBottom="12dp" />
+            android:layout_marginBottom="12dp">
+
+            <EditText
+                android:id="@+id/edtPassword"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Senha"
+                android:inputType="textPassword"
+                android:background="@drawable/field_bg"
+                android:backgroundTint="@null"
+                android:paddingStart="16dp"
+                android:paddingEnd="48dp"
+                android:textColor="#222222"
+                android:textColorHint="#9C9C9C" />
+
+            <ImageButton
+                android:id="@+id/btnTogglePasswordRegister"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="end|center_vertical"
+                android:background="@android:color/transparent"
+                android:padding="8dp"
+                android:contentDescription="Mostrar/ocultar senha"
+                android:src="@drawable/ic_visibility_off"
+                android:tint="#666666" />
+        </FrameLayout>
 
         <!-- Feedback da força -->
         <TextView

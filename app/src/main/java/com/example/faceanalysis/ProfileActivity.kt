@@ -10,6 +10,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 
+/**
+ * Exibe informacoes basicas do usuario autenticado (e-mail, UID, status).
+ * Permite retornar para a tela principal com transicao suave.
+ */
 class ProfileActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
@@ -27,24 +31,24 @@ class ProfileActivity : AppCompatActivity() {
         val txtProfileStatus: TextView = findViewById(R.id.txtProfileStatus)
         val btnBackToMain: Button = findViewById(R.id.btnBackToMain)
 
-        // 🔐 Obtém usuário logado
+        // Obtem o usuario logado
         val currentUser = auth.currentUser
         if (currentUser != null) {
-            txtProfileEmail.text = "📧 ${currentUser.email}"
-            txtProfileUid.text = "🆔 UID: ${currentUser.uid}"
+            txtProfileEmail.text = "E-mail: ${currentUser.email}"
+            txtProfileUid.text = "UID: ${currentUser.uid}"
 
             txtProfileStatus.text = if (currentUser.isEmailVerified) {
-                "✅ E-mail verificado"
+                "E-mail verificado"
             } else {
-                "⚠️ E-mail ainda não verificado"
+                "E-mail ainda nao verificado"
             }
 
         } else {
-            Toast.makeText(this, "Nenhum usuário logado.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Nenhum usuario logado.", Toast.LENGTH_SHORT).show()
             finish()
         }
 
-        // 💫 Efeito suave no botão
+        // Efeito suave no botao
         btnBackToMain.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN ->
@@ -57,7 +61,7 @@ class ProfileActivity : AppCompatActivity() {
             false
         }
 
-        // 🔙 Voltar à tela principal
+        // Voltar para a tela principal
         btnBackToMain.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -72,3 +76,4 @@ class ProfileActivity : AppCompatActivity() {
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
     }
 }
+

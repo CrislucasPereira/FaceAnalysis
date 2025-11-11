@@ -4,10 +4,15 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.os.Looper
 import android.util.AttributeSet
 import android.view.View
-import kotlin.math.abs // Certifique-se de que esta importação existe, se estiver usando abs
 
+/**
+ * Camada de desenho para exibir landmarks faciais sobre o preview da camera.
+ * - Converte coordenadas normalizadas em pixels de tela, respeitando rotacao e camera frontal.
+ * - Redesenha apenas quando necessario (invalidate/postInvalidate).
+ */
 class OverlayView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -35,20 +40,28 @@ class OverlayView @JvmOverloads constructor(
     fun setPoints(newPoints: List<Pair<Float, Float>>, isFrontCamera: Boolean = true) {
         this.points = newPoints
         this.isFrontCamera = isFrontCamera
-        invalidate()
+        // Garante execucao na UI thread
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            invalidate()
+        } else {
+            postInvalidate()
+        }
     }
 
     fun setRotationDegrees(degrees: Int) {
         this.rotationDegrees = degrees
-        invalidate()
+        // Garante execucao na UI thread
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            invalidate()
+        } else {
+            postInvalidate()
+        }
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        if (!drawLandmarks || points.isEmpty()) {
-            return
-        }
+        if (!drawLandmarks || points.isEmpty()) return
 
         val w = width.toFloat()
         val h = height.toFloat()
@@ -72,3 +85,4 @@ class OverlayView @JvmOverloads constructor(
         }
     }
 }
+

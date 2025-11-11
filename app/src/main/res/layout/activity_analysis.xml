@@ -12,9 +12,7 @@
         android:id="@+id/previewView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitCenter"
-        tools:ignore="MissingClass"
-        tools:background="@drawable/face_placeholder" />
+        android:scaleType="fitCenter"/>
 
     <!-- Overlay dos pontos faciais -->
     <com.example.faceanalysis.OverlayView
@@ -29,7 +27,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="#222222"
         android:elevation="8dp"
-        app:title="Análise Facial"
+        app:title="@string/analysis_title"
         app:titleTextColor="#FFFFFF"
         app:navigationIcon="@drawable/ic_back"
         android:paddingHorizontal="12dp" />
@@ -51,7 +49,7 @@
             android:id="@+id/tvResult"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Status: Iniciando..."
+            android:text="@string/status_starting"
             android:textColor="#FFFFFF"
             android:textSize="17sp"
             android:fontFamily="@font/poppins_semibold"
@@ -62,21 +60,22 @@
             android:id="@+id/tvAdditionalInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Aguardando detecção facial..."
+            android:text="@string/waiting_face_detection"
             android:textColor="#D0D0D0"
             android:textSize="14sp"
             android:fontFamily="@font/poppins_regular"
             android:layout_marginBottom="6dp" />
 
-        <!-- 🔢 Contadores em tempo real -->
+        <!-- Contadores em tempo real -->
         <TextView
             android:id="@+id/tvCounters"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Microsleep: 0.0s / 2.0s\nYaw: 0.0s / 3.0s\nBocejos: 0 / 4"
+            android:text="@string/counters_initial"
             android:textColor="#BBBBBB"
             android:textSize="13sp"
             android:fontFamily="@font/poppins_regular"
             android:layout_marginTop="4dp" />
     </LinearLayout>
 </FrameLayout>
+

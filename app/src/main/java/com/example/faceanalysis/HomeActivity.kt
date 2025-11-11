@@ -8,7 +8,11 @@ import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 
+/**
+ * Tela inicial com animacao simples e entrada para login.
+ */
 class HomeActivity : AppCompatActivity() {
 
     @SuppressLint("ClickableViewAccessibility")
@@ -16,12 +20,21 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
-        // ✨ Animação fade geral (arquivo: res/anim/fade_in.xml)
+        // Se já existe sessão persistida do Firebase, pula direto para a área logada.
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            startActivity(Intent(this, MainActivity::class.java))
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+            finish()
+            return
+        }
+
+        // Animacao fade geral (arquivo: res/anim/fade_in.xml)
         val root = findViewById<View>(android.R.id.content)
         val fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in)
         root.startAnimation(fadeIn)
 
-        // 🎬 Animação suave individual dos elementos
+        // Animacao suave dos elementos
         val center = findViewById<View>(R.id.centerGroup)
         val btnEnter = findViewById<Button>(R.id.btnEnter)
 
@@ -31,12 +44,12 @@ class HomeActivity : AppCompatActivity() {
             view.animate()
                 .alpha(1f)
                 .translationY(0f)
-                .setStartDelay((180L * index))
+                .setStartDelay(180L * index)
                 .setDuration(500L)
                 .start()
         }
 
-        // ⚡ Efeito de toque (escala suave)
+        // Efeito de toque (escala suave)
         btnEnter.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> v.animate()
@@ -52,7 +65,7 @@ class HomeActivity : AppCompatActivity() {
                         .setDuration(80)
                         .start()
 
-                    v.performClick() // mantém a acessibilidade
+                    v.performClick() // preserva a acessibilidade
                 }
             }
             false
