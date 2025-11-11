@@ -13,4 +13,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+# v10 Final
 app/google-services.json
