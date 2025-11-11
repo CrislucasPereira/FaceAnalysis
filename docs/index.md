@@ -6,8 +6,14 @@ description: Detecção de fadiga em tempo real no Android (CameraX + MediaPipe 
 <link rel="stylesheet" href="assets/css/custom.css" />
 
 <section class="hero">
-  <h1>DriveON</h1>
-  <p class="subtitle">Detecção de fadiga em tempo real no Android</p>
+  <div class="banner"></div>
+  <img class="car" alt="Carro" src="app/src/main/res/drawable/ic_car.png" width="140" />
+  <div class="title-stack">
+    <div class="title-box">
+      <h1><span class="brand-drive">Drive</span><span class="brand-on">On</span></h1>
+    </div>
+    <p class="subtitle">Características do Relatório Técnico</p>
+  </div>
   <div class="badges">
     <img alt="Android" src="https://img.shields.io/badge/Android-8.0%2B-brightgreen?logo=android" />
     <img alt="Kotlin" src="https://img.shields.io/badge/Kotlin-2.0.21-7F52FF?logo=kotlin" />
@@ -15,9 +21,9 @@ description: Detecção de fadiga em tempo real no Android (CameraX + MediaPipe 
     <img alt="AGP" src="https://img.shields.io/badge/AGP-8.12.3-3DDC84?logo=android" />
   </div>
   <div class="cta">
-    <a class="btn primary" href="https://github.com/CrislucasPereira/FaceAnalysis">Ver no GitHub</a>
-    <a class="btn" href="#instalacao">Começar agora</a>
-    <a class="btn" href="https://github.com/CrislucasPereira/FaceAnalysis/releases/tag/v10">Download v10</a>
+    <a class="btn primary-dark" href="https://github.com/CrislucasPereira/FaceAnalysis">Ver no GitHub</a>
+    <a class="btn outline-yellow" href="#instalacao">Começar agora</a>
+    <a class="btn gradient" href="https://github.com/CrislucasPereira/FaceAnalysis/releases/tag/v10">Download v10</a>
   </div>
 </section>
 
@@ -113,6 +119,8 @@ service cloud.firestore {
 - Migrar YUV→RGB para implementação sem RenderScript
 - I18n completa e Parcelable no histórico
 - Testes instrumentados mínimos do pipeline
+
+<p class="credits">Crislucas Pereira – Ednei Romão – Guilherme Nishiyama – Victor Nunes</p>
 
 ## Changelog
 - v10 Final
