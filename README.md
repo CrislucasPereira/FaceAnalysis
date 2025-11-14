@@ -1,8 +1,8 @@
-<div align="center">
+﻿<div align="center">
 
-# DriveON – Face Analysis (Android)
+# DriveON ÔÇô Face Analysis (Android)
 
-Análise em tempo real de fadiga do motorista usando CameraX + MediaPipe + ONNX, com alertas sonoros e histórico no Firebase.
+An├ílise em tempo real de fadiga do motorista usando CameraX + MediaPipe + ONNX, com alertas sonoros e hist├│rico no Firebase.
 
 ![Android](https://img.shields.io/badge/Android-8.0%2B-brightgreen?logo=android)
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-7F52FF?logo=kotlin)
@@ -11,68 +11,69 @@ Análise em tempo real de fadiga do motorista usando CameraX + MediaPipe + ONNX,
 
 </div>
 
-## Visão Geral
-O DriveON detecta sinais de fadiga a partir de landmarks faciais (MediaPipe) e classificação temporal (modelo ONNX). Ele:
+## Vis├úo Geral
+O DriveON detecta sinais de fadiga a partir de landmarks faciais (MediaPipe) e classifica├º├úo temporal (modelo ONNX). Ele:
 - Mostra overlay de pontos faciais em tempo real (CameraX)
-- Emite alertas (Microsleep e Bocejo) e exibe aviso de “Sinais de sono”
-- Registra eventos no Firestore e apresenta relatórios diários
-- Mantém sessão de login persistida e funciona offline após o primeiro login
+- Emite alertas (Microsleep e Bocejo) e exibe aviso de ÔÇ£Sinais de sonoÔÇØ
+- Registra eventos no Firestore e apresenta relat├│rios di├írios
+- Mant├®m sess├úo de login persistida e funciona offline ap├│s o primeiro login
 
 ## Recursos
-- CameraX (frontal) com processamento contínuo
+- CameraX (frontal) com processamento cont├¡nuo
 - MediaPipe Face Landmarker (landmarks 3D/precisos)
-- ONNX Runtime para classificação temporal (Microsleep/Bocejo/Atento)
+- ONNX Runtime para classifica├º├úo temporal (Microsleep/Bocejo/Atento)
 - Alertas sonoros (loops/bipes) via `AlertManager`
-- Relatórios (Pizza/Barras/Radar) com legendas que não se sobrepõem (word‑wrap)
-- Firestore com cache/persistência offline habilitado
+- Relat├│rios (Pizza/Barras/Radar) com legendas que n├úo se sobrep├Áem (wordÔÇæwrap)
+- Firestore com cache/persist├¬ncia offline habilitado
 
-## Arquitetura (alto nível)
+## Arquitetura (alto n├¡vel)
 ```
 CameraX -> Frames -> MediaPipe FaceLandmarker -> Landmarks
-       -> Extração de features (normalização + pontos) -> Buffer temporal (SEQ_LEN)
-       -> ONNX Runtime (LSTM) -> Decisão (microsleep/bocejo/atento)
+       -> Extra├º├úo de features (normaliza├º├úo + pontos) -> Buffer temporal (SEQ_LEN)
+       -> ONNX Runtime (LSTM) -> Decis├úo (microsleep/bocejo/atento)
        -> UI (overlay + status + contadores) -> Alertas -> Firestore (events)
 ```
 
-## Avaliação e Métricas
+## Avalia├º├úo e M├®tricas
 
-### Parâmetros alternativos
+### Par├ómetros alternativos
 
-| Nível de sensibilidade | Limiar Microsleep (ms olhos fechados) | Bocejos consecutivos | Aplicação sugerida |
+| N├¡vel de sensibilidade | Limiar Microsleep (ms olhos fechados) | Bocejos consecutivos | Aplica├º├úo sugerida |
 | --- | --- | --- | --- |
-| **Alta** | 1.200 ms | 2 | Turnos noturnos/frotas com histórico de fadiga. Maior chance de falsos positivos. |
-| **Média (default)** | 2.000 ms | 3 | Situações gerais, equilíbrio entre alerta e conforto do motorista. |
+| **Alta** | 1.200 ms | 2 | Turnos noturnos/frotas com hist├│rico de fadiga. Maior chance de falsos positivos. |
+| **M├®dia (default)** | 2.000 ms | 3 | Situa├º├Áes gerais, equil├¡brio entre alerta e conforto do motorista. |
 | **Baixa** | 2.800 ms | 4 | Testes iniciais ou motoristas que reclamam de excesso de avisos. |
 
-Outro parâmetro relevante:
-- EAR/MAR adaptativos via histórico (`HISTORY_SIZE = 5`) reduzem oscilações do LSTM em faces parcialmente visíveis.
+Outro par├ómetro relevante:
+- EAR/MAR adaptativos via hist├│rico (`HISTORY_SIZE = 5`) reduzem oscila├º├Áes do LSTM em faces parcialmente vis├¡veis.
 
-### Latência no dispositivo
-- A tela de análise exibe a latência média do pipeline (MediaPipe + featurização + decisão) usando uma média exponencial (20% das amostras mais recentes).  
-- O valor mostrado também inclui o FPS efetivo (`fps = 1000/latência`), possibilitando comparar diferentes aparelhos antes de implantar em campo.  
+### Lat├¬ncia no dispositivo
+- A tela de an├ílise exibe a lat├¬ncia m├®dia do pipeline (MediaPipe + featuriza├º├úo + decis├úo) usando uma m├®dia exponencial (20% das amostras mais recentes).  
+- O valor mostrado tamb├®m inclui o FPS efetivo (`fps = 1000/lat├¬ncia`), possibilitando comparar diferentes aparelhos antes de implantar em campo.  
+
 ## Estrutura do Projeto
 ```
 app/
   src/main/java/com/example/faceanalysis/
-    AnalysisActivity.kt · AlertManager.kt · OverlayView.kt
-    LoginActivity.kt · RegisterActivity.kt · HomeActivity.kt · MainActivity.kt
-    ReportActivity.kt · ProfileActivity.kt · PrivacyActivity.kt
+    AnalysisActivity.kt ┬À AlertManager.kt ┬À OverlayView.kt
+    LoginActivity.kt ┬À RegisterActivity.kt ┬À HomeActivity.kt ┬À MainActivity.kt
+    ReportActivity.kt ┬À ProfileActivity.kt ┬À PrivacyActivity.kt
   src/main/res/ (layouts, values, raw)
   src/main/assets/ (face_landmarker.task, model_lstm_*.onnx)
   AndroidManifest.xml
 ```
 
-## Instalação
-1) Pré‑requisitos
+## Instala├º├úo
+1) Pr├®ÔÇærequisitos
 - Android Studio (Giraffe+), JDK 17
-- Dispositivo real com câmera frontal (recomendado)
+- Dispositivo real com c├ómera frontal (recomendado)
 
 2) Firebase
-- Adicione seu arquivo `app/google-services.json` (não é versionado neste repositório público)
-- Habilite Auth por E‑mail/Senha no Firebase Console
+- Adicione seu arquivo `app/google-services.json` (n├úo ├® versionado neste reposit├│rio p├║blico)
+- Habilite Auth por EÔÇæmail/Senha no Firebase Console
 
 3) Build & Run
-- Sincronize o Gradle e execute o módulo `app` em um dispositivo real
+- Sincronize o Gradle e execute o m├│dulo `app` em um dispositivo real
 
 ## Firestore (estrutura e regras)
 Estrutura de documentos dos eventos:
@@ -102,18 +103,18 @@ service cloud.firestore {
 ```
 
 ## Notas Importantes
-- Sessão persistida (auto‑login) e Firestore offline habilitado
-- Overlay espelhado para câmera frontal e PreviewView `fillCenter` para melhor alinhamento
-- O arquivo `app/google-services.json` não deve ser versionado (já ignorado no `.gitignore`)
+- Sess├úo persistida (autoÔÇælogin) e Firestore offline habilitado
+- Overlay espelhado para c├ómera frontal e PreviewView `fillCenter` para melhor alinhamento
+- O arquivo `app/google-services.json` n├úo deve ser versionado (j├í ignorado no `.gitignore`)
 
 ## Troubleshooting
-- PERMISSION_DENIED no relatório: confira as regras acima e se o `uid` do documento em `users/{uid}` é o mesmo do usuário autenticado
-- “No chart data available” com eventos: verifique se o dia possui eventos ativos (Microsleep/Bocejo/Atento/Sem Rosto)
-- Build com pouca memória (Windows):
+- PERMISSION_DENIED no relat├│rio: confira as regras acima e se o `uid` do documento em `users/{uid}` ├® o mesmo do usu├írio autenticado
+- ÔÇ£No chart data availableÔÇØ com eventos: verifique se o dia possui eventos ativos (Microsleep/Bocejo/Atento/Sem Rosto)
+- Build com pouca mem├│ria (Windows):
   ```
   ./gradlew.bat --stop
   ./gradlew.bat clean :app:assembleDebug --no-daemon
   ```
 
-## Licença
-Defina a licença do projeto (MIT/Apache 2.0, etc.) conforme sua necessidade.
+## Licen├ºa
+Defina a licen├ºa do projeto (MIT/Apache 2.0, etc.) conforme sua necessidade.
