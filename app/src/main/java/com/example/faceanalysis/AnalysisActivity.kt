@@ -94,6 +94,7 @@ class AnalysisActivity : AppCompatActivity() {
     private var yawnCount = 0
     private var mouthOpen = false
     private var yawnStartTime = 0L
+    private var lastYawnRegisteredTime = 0L
 
     //Contadores visuais (milissegundos)
     private var microsleepMillis = 0L
@@ -511,35 +512,42 @@ class AnalysisActivity : AppCompatActivity() {
                 }
             } else if (mouthOpen && now - yawnStartTime >= 500L) {
                 mouthOpen = false
-                yawnCount++
 
-                handleEventTransition("Bocejo")
-                addEventToHistory("Bocejo")
+                val cooldown = 2500L
+                if (now - lastYawnRegisteredTime >= cooldown) {
+                    lastYawnRegisteredTime = now
+                    yawnCount++
 
-                saveEventToFirebase(
-                    status = "Bocejo",
-                    start = now - 500L,
-                    end = now,
-                    duration = 500L,
-                    ear = lastEar,
-                    mar = lastMar,
-                    yaw = lastYaw,
-                    conf = lastConf
-                )
+                    handleEventTransition("Bocejo")
+                    addEventToHistory("Bocejo")
 
-                Log.d(TAG, "Bocejo detectado e salvo no Firebase")
+                    saveEventToFirebase(
+                        status = "Bocejo",
+                        start = now - 500L,
+                        end = now,
+                        duration = 500L,
+                        ear = lastEar,
+                        mar = lastMar,
+                        yaw = lastYaw,
+                        conf = lastConf
+                    )
 
-                if (yawnCount >= yawnNeeded) {
-                    // mostra alerta de sonolência
-                    showSleepWarningDialog()
+                    Log.d(TAG, "Bocejo detectado e salvo no Firebase")
 
-                    // registra o evento de sonolência
-                    handleEventTransition("Sinais de Sono")
-                    addEventToHistory("Sinais de Sono")
+                    if (yawnCount >= yawnNeeded) {
+                        // mostra alerta de sonolência
+                        showSleepWarningDialog()
 
-                    // pausa estados ativos relevantes
-                    inMicrosleep = false
-                    eyesClosedStartTime = 0L
+                        // registra o evento de sonolência
+                        handleEventTransition("Sinais de Sono")
+                        addEventToHistory("Sinais de Sono")
+
+                        // pausa estados ativos relevantes
+                        inMicrosleep = false
+                        eyesClosedStartTime = 0L
+                    }
+                } else {
+                    Log.d(TAG, "Bocejo ignorado por ocorrer dentro de $cooldown ms")
                 }
             }
         }
@@ -679,13 +687,16 @@ class AnalysisActivity : AppCompatActivity() {
                 .setCancelable(false)
                 .create()
 
+            alertManager.startWarningTone()
             btnOk.setOnClickListener {
                 dialog.dismiss()
                 yawnCount = 0
                 handleEventTransition("Alerta")
-                Toast.makeText(this, "Voltando ?? analise...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.returning_to_analysis), Toast.LENGTH_SHORT).show()
+                alertManager.stopWarningTone()
             }
 
+            dialog.setOnDismissListener { alertManager.stopWarningTone() }
             dialog.show()
         }
     }

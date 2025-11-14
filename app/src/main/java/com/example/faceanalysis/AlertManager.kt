@@ -18,12 +18,14 @@ class AlertManager(private val context: Context) {
 
     private var mpMicrosleep: MediaPlayer? = null
     private var mpBocejo: MediaPlayer? = null
+    private var mpWarningTone: MediaPlayer? = null
     private var mpSemRosto: MediaPlayer? = null
 
     private val handler = Handler(Looper.getMainLooper())
 
     private var isMicrosleepPlaying = false
     private var isBocejoPlaying = false
+    private var isWarningTonePlaying = false
 
     companion object {
         private const val TAG = "AlertManager"
@@ -32,8 +34,10 @@ class AlertManager(private val context: Context) {
     init {
         try {
             // Sons curtos (bipes) e longos devem estar em /res/raw/
-            mpMicrosleep = MediaPlayer.create(context, R.raw.alerta_microsleep)
+            // Microsleep reaproveita o mesmo áudio de bocejo, porém em loop contínuo
+            mpMicrosleep = MediaPlayer.create(context, R.raw.alerta_bocejo)
             mpBocejo = MediaPlayer.create(context, R.raw.alerta_bocejo)
+            mpWarningTone = MediaPlayer.create(context, R.raw.alerta_bocejo)
             mpSemRosto = MediaPlayer.create(context, R.raw.alerta_falta_rosto)
         } catch (e: Exception) {
             Log.e(TAG, "Erro carregando sons: ${e.message}")
@@ -72,19 +76,21 @@ class AlertManager(private val context: Context) {
     fun startBocejoLoop() {
         if (isBocejoPlaying) return
         isBocejoPlaying = true
-        loopBocejo()
+        handler.post(bocejoRunnable)
     }
 
-    private fun loopBocejo() {
-        if (!isBocejoPlaying) return
-        mpBocejo?.seekTo(0)
-        mpBocejo?.start()
-        handler.postDelayed({ loopBocejo() }, 600)
+    private val bocejoRunnable = object : Runnable {
+        override fun run() {
+            if (!isBocejoPlaying) return
+            mpBocejo?.seekTo(0)
+            mpBocejo?.start()
+            handler.postDelayed(this, 600)
+        }
     }
 
     fun stopBocejoLoop() {
         isBocejoPlaying = false
-        handler.removeCallbacksAndMessages(null)
+        handler.removeCallbacks(bocejoRunnable)
     }
 
     // SEM ROSTO: apenas uma vez
@@ -98,17 +104,38 @@ class AlertManager(private val context: Context) {
         }
     }
 
+    private val warningRunnable = object : Runnable {
+        override fun run() {
+            if (!isWarningTonePlaying) return
+            mpWarningTone?.seekTo(0)
+            mpWarningTone?.start()
+            handler.postDelayed(this, 1500)
+        }
+    }
+
+    fun startWarningTone() {
+        if (isWarningTonePlaying) return
+        isWarningTonePlaying = true
+        handler.post(warningRunnable)
+    }
+
+    fun stopWarningTone() {
+        isWarningTonePlaying = false
+        handler.removeCallbacks(warningRunnable)
+    }
+
     // Libera recursos
     fun release() {
         try {
             stopMicrosleep()
             stopBocejoLoop()
+            stopWarningTone()
             mpMicrosleep?.release()
             mpBocejo?.release()
             mpSemRosto?.release()
+            mpWarningTone?.release()
         } catch (e: Exception) {
             Log.e(TAG, "Erro ao liberar sons: ${e.message}")
         }
     }
 }
-
