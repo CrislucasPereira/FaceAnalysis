@@ -50,8 +50,6 @@ Outro parâmetro relevante:
 ### Latência no dispositivo
 - A tela de análise exibe a latência média do pipeline (MediaPipe + featurização + decisão) usando uma média exponencial (20% das amostras mais recentes).  
 - O valor mostrado também inclui o FPS efetivo (`fps = 1000/latência`), possibilitando comparar diferentes aparelhos antes de implantar em campo.  
-- Para manter o valor estável em ~60 ms mesmo em aparelhos medianos, o analisador processa um frame sim/outro não (aprox. 15 fps efetivos), preservando o preview em 30 fps mas reduzindo gargalos da MediaPipe/ONNX.
-
 ## Estrutura do Projeto
 ```
 app/
