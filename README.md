@@ -34,6 +34,24 @@ CameraX -> Frames -> MediaPipe FaceLandmarker -> Landmarks
        -> UI (overlay + status + contadores) -> Alertas -> Firestore (events)
 ```
 
+## Avaliação e Métricas
+
+### Parâmetros alternativos
+
+| Nível de sensibilidade | Limiar Microsleep (ms olhos fechados) | Bocejos consecutivos | Aplicação sugerida |
+| --- | --- | --- | --- |
+| **Alta** | 1.200 ms | 2 | Turnos noturnos/frotas com histórico de fadiga. Maior chance de falsos positivos. |
+| **Média (default)** | 2.000 ms | 3 | Situações gerais, equilíbrio entre alerta e conforto do motorista. |
+| **Baixa** | 2.800 ms | 4 | Testes iniciais ou motoristas que reclamam de excesso de avisos. |
+
+Outro parâmetro relevante:
+- EAR/MAR adaptativos via histórico (`HISTORY_SIZE = 5`) reduzem oscilações do LSTM em faces parcialmente visíveis.
+
+### Latência no dispositivo
+- A tela de análise exibe a latência média do pipeline (MediaPipe + featurização + decisão) usando uma média exponencial (20% das amostras mais recentes).  
+- O valor mostrado também inclui o FPS efetivo (`fps = 1000/latência`), possibilitando comparar diferentes aparelhos antes de implantar em campo.  
+- Para manter o valor estável em ~60 ms mesmo em aparelhos medianos, o analisador processa um frame sim/outro não (aprox. 15 fps efetivos), preservando o preview em 30 fps mas reduzindo gargalos da MediaPipe/ONNX.
+
 ## Estrutura do Projeto
 ```
 app/
@@ -101,4 +119,3 @@ service cloud.firestore {
 
 ## Licença
 Defina a licença do projeto (MIT/Apache 2.0, etc.) conforme sua necessidade.
-
