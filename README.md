@@ -57,12 +57,13 @@ O DriveON detecta sinais de fadiga a partir de **landmarks faciais
                                                              alerta e
                                                              conforto.
 
-  *Baixa*       2800 ms               4                    Testes iniciais
+  **Média**      2800 ms               4                    Testes iniciais
                                                              ou motoristas que
                                                              reclamam de
                                                              excesso de
                                                              avisos.
   ----------------------------------------------------------------------------
+
 
 ### Latência no dispositivo
 
