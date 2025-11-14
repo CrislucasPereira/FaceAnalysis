@@ -42,26 +42,12 @@ O DriveON detecta sinais de fadiga a partir de **landmarks faciais
 
 ### Parâmetros de Sensibilidade
 
-  ----------------------------------------------------------------------------
-  Sensibilidade   Limiar Microsleep     Bocejos consecutivos Aplicação
-                  (ms)                                       sugerida
-  --------------- --------------------- -------------------- -----------------
-  **Alta**        1200 ms               2                    Turnos
-                                                             noturnos/frotas
-                                                             com histórico de
-                                                             fadiga. Mais
-                                                             falsos positivos.
+| Nível de sensibilidade | Limiar Microsleep (ms) | Bocejos consecutivos | Aplicação sugerida |
+|------------------------|-------------------------|------------------------|---------------------|
+| **Alta**               | 1200 ms                 | 2                      | Turnos noturnos/frotas com histórico de fadiga. Mais falsos positivos. |
+| **Média (default)**    | 2000 ms                 | 3                      | Uso geral. Equilíbrio entre alerta e conforto. |
+| **Baixa**              | 2800 ms                 | 4                      | Testes iniciais ou motoristas que reclamam de excesso de avisos. |
 
-  **Média**       2000 ms               3                    Uso geral.
-  (default)                                                  Equilíbrio entre
-                                                             alerta e
-                                                             conforto.
-
-  **Baixa**      2800 ms               4                    Testes iniciais
-                                                             ou motoristas que
-                                                             reclamam de
-                                                             excesso de
-                                                             avisos.
   ----------------------------------------------------------------------------
 
 
