@@ -1,6 +1,5 @@
 ﻿# DriveON -- Face Analysis (Android)
 
-::: {align="center"}
 Análise em tempo real de fadiga do motorista usando CameraX +
 MediaPipe + ONNX, com alertas sonoros e histórico no Firebase.
 
