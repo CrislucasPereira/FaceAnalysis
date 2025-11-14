@@ -28,6 +28,8 @@
     <string name="waiting_face_detection">Aguardando detecção facial...</string>
     <string name="counters_initial">Microsleep: 0.0s / 2.0s
 Bocejos: 0 / 4</string>
+    <string name="latency_initial">Latência média: --</string>
+    <string name="latency_template">Latência média: %1$.0f ms (%2$.1f fps)</string>
     <string name="camera_permission_denied">Permissão de câmera negada</string>
     <string name="camera_permission_required">Permissão de câmera é necessária.</string>
     <string name="returning_to_analysis">Voltando à análise...</string>

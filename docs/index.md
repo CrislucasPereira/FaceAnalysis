@@ -63,6 +63,15 @@ CameraX -> MediaPipe FaceLandmarker -> Landmarks
        -> UI (overlay + status + contadores) -> Alertas -> Firestore (events)
 ```
 
+## Avaliação e Métricas
+
+### Parâmetros alternativos
+| Sensibilidade | Microsleep (ms) | Bocejos necessários | Uso |
+| --- | --- | --- | --- |
+| Alta | 1.200 | 2 | Plantões longos / maior vigilância |
+| Média (padrão) | 2.000 | 3 | Equilíbrio alerta × conforto |
+| Baixa | 2.800 | 4 | Testes ou motoristas sensíveis a alarmes |
+
 ## Estrutura de Pastas
 ```
 app/

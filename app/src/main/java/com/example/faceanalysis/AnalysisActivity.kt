@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
 import android.view.*
 import android.widget.*
@@ -27,6 +28,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.io.*
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayDeque
 import kotlin.math.*
@@ -50,6 +52,7 @@ class AnalysisActivity : AppCompatActivity() {
     private lateinit var tvResult: TextView
     private lateinit var tvAdditionalInfo: TextView
     private lateinit var tvCounters: TextView
+    private lateinit var tvLatency: TextView
     private lateinit var overlayView: OverlayView
     private lateinit var analysisToolbar: Toolbar
 
@@ -94,6 +97,11 @@ class AnalysisActivity : AppCompatActivity() {
 
     //Contadores visuais (milissegundos)
     private var microsleepMillis = 0L
+    private var emaLatencyMs = 0.0
+    private var latencySamples = 0
+    private val LATENCY_ALPHA = 0.2
+    private val latencyStartMap = ConcurrentHashMap<Long, Long>()
+    private var skipNextFrame = false
     
     //Landmarks e Índices
     private val SELECTED_LANDMARKS = listOf(
@@ -130,7 +138,12 @@ class AnalysisActivity : AppCompatActivity() {
         tvResult = findViewById(R.id.tvResult)
         tvAdditionalInfo = findViewById(R.id.tvAdditionalInfo)
         tvCounters = findViewById(R.id.tvCounters)
+        tvLatency = findViewById(R.id.tvLatency)
         analysisToolbar = findViewById(R.id.analysisToolbar)
+
+        emaLatencyMs = 0.0
+        latencySamples = 0
+        tvLatency.text = getString(R.string.latency_initial)
 
         previewView.implementationMode = PreviewView.ImplementationMode.COMPATIBLE
         setSupportActionBar(analysisToolbar)
@@ -303,6 +316,9 @@ class AnalysisActivity : AppCompatActivity() {
             .setNumFaces(1)
             .setResultListener { result, _ ->
                 try {
+                    val frameStartNs = result.timestampMs()?.let { ts ->
+                        latencyStartMap.remove(ts)
+                    } ?: SystemClock.elapsedRealtimeNanos()
                     val faces = result.faceLandmarks()
                     lastDetectionTime = System.currentTimeMillis()
                     val now = System.currentTimeMillis()
@@ -338,11 +354,12 @@ class AnalysisActivity : AppCompatActivity() {
                         microsleepMillis = 0L
 
                         // impede processamento desnecessorio
+                        updateLatencyMetrics(frameStartNs)
                         return@setResultListener
                     }
 
                     // --- rosto detectado normalmente ---
-                    processFace(faces[0])
+                    processFace(faces[0], frameStartNs)
 
                     if (currentEventLabel == null) {
                         handleEventTransition("Atento")
@@ -370,7 +387,10 @@ class AnalysisActivity : AppCompatActivity() {
 
 
     // --- Loop principal de processamento ---
-    private fun processFace(face: List<com.google.mediapipe.tasks.components.containers.NormalizedLandmark>) {
+    private fun processFace(
+        face: List<com.google.mediapipe.tasks.components.containers.NormalizedLandmark>,
+        frameStartNs: Long
+    ) {
         currentFace = face
 
         // Normalização pro modelo (centro no nariz, escala distância entre olhos)
@@ -417,6 +437,25 @@ class AnalysisActivity : AppCompatActivity() {
                 "Microsleep: ${"%.1f".format(microsleepMillis/1000f)}s / ${"%.1f".format(microsleepThresholdMs()/1000f)}s\n" +
                         "Bocejos: $yawnCount / ${yawnRequiredCount()}"
         }
+
+        updateLatencyMetrics(frameStartNs)
+    }
+
+    private fun updateLatencyMetrics(frameStartNs: Long) {
+        val elapsedMs = (SystemClock.elapsedRealtimeNanos() - frameStartNs) / 1_000_000.0
+        if (!elapsedMs.isFinite() || elapsedMs <= 0) return
+
+        if (latencySamples == 0) {
+            emaLatencyMs = elapsedMs
+        } else {
+            emaLatencyMs += LATENCY_ALPHA * (elapsedMs - emaLatencyMs)
+        }
+        latencySamples++
+
+        val fps = if (emaLatencyMs > 0) 1000.0 / emaLatencyMs else 0.0
+        val label = getString(R.string.latency_template, emaLatencyMs, fps)
+
+        runOnUiThread { tvLatency.text = label }
     }
 
     // --- Lógica dos detectores + contadores---
@@ -716,9 +755,16 @@ class AnalysisActivity : AppCompatActivity() {
                     imageProxy.close()
                     return@setAnalyzer
                 }
+                if (skipNextFrame) {
+                    skipNextFrame = false
+                    imageProxy.close()
+                    return@setAnalyzer
+                }
+                skipNextFrame = true
                 isProcessingFrame = true
 
                 try {
+                    var pendingTimestampMs: Long? = null
                     val bitmap = imageProxy.toBitmap()
                     if (bitmap != null && faceLandmarker != null) {
                         val mpImage = com.google.mediapipe.framework.image.BitmapImageBuilder(bitmap).build()
@@ -727,10 +773,15 @@ class AnalysisActivity : AppCompatActivity() {
                             .build()
 
                         try {
-                            faceLandmarker?.detectAsync(mpImage, imgProcOptions, System.currentTimeMillis())
+                            val measurementStartNs = SystemClock.elapsedRealtimeNanos()
+                            val frameTimestampMs = measurementStartNs / 1_000_000
+                            pendingTimestampMs = frameTimestampMs
+                            latencyStartMap[frameTimestampMs] = measurementStartNs
+                            faceLandmarker?.detectAsync(mpImage, imgProcOptions, frameTimestampMs)
                             overlayView.setRotationDegrees(imageProxy.imageInfo.rotationDegrees)
                         } catch (e: Exception) {
                             Log.e(TAG, "Erro detectAsync: ${e.message}")
+                            pendingTimestampMs?.let { latencyStartMap.remove(it) }
                             resetLandmarker()
                         }
                     }
