@@ -22,7 +22,7 @@ description: Detecção de fadiga em tempo real no Android (CameraX + MediaPipe 
   <div class="cta">
     <a class="btn primary-dark" href="https://github.com/CrislucasPereira/FaceAnalysis">Ver no GitHub</a>
     <a class="btn outline-yellow" href="#instalacao">Começar agora</a>
-    <a class="btn gradient" href="https://github.com/CrislucasPereira/FaceAnalysis/releases/tag/v10">Download v10</a>
+    <a class="btn gradient" href="https://github.com/CrislucasPereira/FaceAnalysis/releases/tag/v10_Final">Download v10</a>
   </div>
 </section>
 
@@ -128,11 +128,11 @@ service cloud.firestore {
 - I18n completa e Parcelable no histórico
 - Testes instrumentados mínimos do pipeline
 
-<p class="credits">Crislucas Pereira – Ednei Romão – Guilherme Nishiyama – Victor Nunes</p>
-
 ## Changelog
 - v10 Final
   - Legendas dos gráficos com word wrap; espaçamento entre cards
   - Auto‑login e Firestore offline
   - Overlay espelhado e PreviewView `fillCenter`
   - Correções de acentuação e limpeza de comentários
+
+<p class="credits">Crislucas Pereira – Ednei Romão – Guilherme Nishiyama – Victor Nunes</p>
