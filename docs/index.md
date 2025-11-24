@@ -8,9 +8,6 @@ description: Detecção de fadiga em tempo real no Android (CameraX + MediaPipe 
 <section class="hero">
   <div class="banner"></div>
   <div class="title-stack">
-    <div class="title-box">
-      <h1><span class="brand-drive">Drive</span><span class="brand-on">On</span></h1>
-    </div>
     <p class="subtitle">Características do Relatório Técnico</p>
   </div>
   <div class="badges">
