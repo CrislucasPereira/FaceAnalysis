@@ -22,7 +22,7 @@ description: Detecção de fadiga em tempo real no Android (CameraX + MediaPipe 
   <div class="cta">
     <a class="btn primary-dark" href="https://github.com/CrislucasPereira/FaceAnalysis">Ver no GitHub</a>
     <a class="btn outline-yellow" href="#instalacao">Começar agora</a>
-    <a class="btn gradient" href="https://github.com/CrislucasPereira/FaceAnalysis/releases/tag/v10_Final">Download v10</a>
+    <a class="btn gradient" href="https://github.com/CrislucasPereira/FaceAnalysis/releases/tag/V10_FINAL">Download v10</a>
   </div>
 </section>
 
@@ -66,11 +66,13 @@ CameraX -> MediaPipe FaceLandmarker -> Landmarks
 ## Avaliação e Métricas
 
 ### Parâmetros alternativos
-| Sensibilidade | Microsleep (ms) | Bocejos necessários | Uso |
-| --- | --- | --- | --- |
-| Alta | 1.200 | 2 | Plantões longos / maior vigilância |
-| Média (padrão) | 2.000 | 3 | Equilíbrio alerta × conforto |
-| Baixa | 2.800 | 4 | Testes ou motoristas sensíveis a alarmes |
+
+| Sensibilidade     | Microsleep (ms) | Bocejos necessários | Uso                                           |
+|-------------------|-----------------|----------------------|-----------------------------------------------|
+| Alta              | 1200            | 2                    | Plantões longos / maior vigilância            |
+| Média (padrão)    | 2000            | 3                    | Equilíbrio alerta × conforto                  |
+| Baixa             | 2800            | 4                    | Testes ou motoristas sensíveis a alarmes      |
+
 
 ## Estrutura de Pastas
 ```
