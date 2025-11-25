@@ -7,7 +7,7 @@ MediaPipe + ONNX, com alertas sonoros e histórico no Firebase.
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-7F52FF?logo=kotlin)
 ![Gradle](https://img.shields.io/badge/Gradle-8.13-02303A?logo=gradle)
 ![AGP](https://img.shields.io/badge/AGP-8.12.3-3DDC84?logo=android)
-:::
+
 
 ## Visão Geral
 
